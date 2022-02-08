@@ -2,17 +2,14 @@ package com.teamsix.employees;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-//import java.sql.Date;
-import java.util.Locale;
 
 public class Employee implements Comparable<Employee>
 {
     public int empID;
     public String namePrefix;
     public String firstName;
-    public String middleInitial;
+    public char middleInitial;
     public String lastName;
     public char gender;
     public String email;
@@ -25,14 +22,10 @@ public class Employee implements Comparable<Employee>
         this.empID = Integer.parseInt(data[0]);
         this.namePrefix = data[1];
         this.firstName = data[2];
-        this.middleInitial = data[3];
+        this.middleInitial = data[3].charAt(0);
         this.lastName = data[4];
         this.gender = data[5].charAt(0);
         this.email = data[6];
-
-        String[] birthday = data[7].split("/");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd", Locale.ENGLISH);
-        StringBuilder stringBuilder = new StringBuilder(birthday[2]).append("-").append(birthday[0]).append("-").append(birthday[1]);
 
         try
         {
