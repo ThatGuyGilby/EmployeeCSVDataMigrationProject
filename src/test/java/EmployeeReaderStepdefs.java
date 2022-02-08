@@ -23,7 +23,7 @@ public class EmployeeReaderStepdefs {
     @And("I give the reader a file name")
     public void iGiveTheReaderAFileName()
     {
-        reader.setPathToReadCSVFrom("E://AdmiralJava-main/EmployeeCSV/project-docs/EmployeeRecords.csv");
+        reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
     }
 
     @When("I call the getValue function")
