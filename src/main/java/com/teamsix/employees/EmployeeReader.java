@@ -1,17 +1,27 @@
 package com.teamsix.employees;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmployeeReader
 {
-    public static void main(String[] args)
+    String pathToReadCSVFrom;
+
+    public EmployeeReader()
     {
-        ReadCSVFromPath("E://AdmiralJava-main/EmployeeCSV/project-docs/EmployeeRecords.csv");
+        pathToReadCSVFrom = "";
     }
 
-    public static void ReadCSVFromPath(String pathToReadCSVFrom)
+    public void setPathToReadCSVFrom(String pathToReadCSVFrom)
     {
-        String  line = "";
+        this.pathToReadCSVFrom = pathToReadCSVFrom;
+    }
+
+    public List<Employee> getValue()
+    {
+        String line = "";
+        List<Employee> employees = new ArrayList<Employee>();
 
         try
         {
@@ -22,14 +32,13 @@ public class EmployeeReader
             {
                 String[] values = line.replaceAll("\\s", "").split(",");
                 Employee employee = new Employee(values);
-                System.out.println(employee.toString());
+                employees.add(employee);
             }
-        }
-        catch (FileNotFoundException e)
+            return employees;
+        } catch (IOException e)
         {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return null;
     }
 }
