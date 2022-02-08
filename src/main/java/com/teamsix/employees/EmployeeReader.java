@@ -59,6 +59,13 @@ public class EmployeeReader
             readerResults.append(duplicateEntries.size());
             readerResults.append("\nNumber of records with empty fields: ");
             readerResults.append(invalidEntries.size());
+            readerResults.append("\n\nDuplicate Result\n");
+
+            for (int i = 0; i < duplicateEntries.size(); i++)
+            {
+                readerResults.append(duplicateEntries.get(i));
+            }
+
             logger.info(readerResults.toString());
 
             return cleanEntries;
