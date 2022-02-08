@@ -3,8 +3,8 @@ package com.teamsix.employees;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-//import java.util.Date;
-import java.sql.Date;
+import java.util.Date;
+//import java.sql.Date;
 import java.util.Locale;
 
 public class Employee implements Comparable<Employee>
@@ -36,7 +36,7 @@ public class Employee implements Comparable<Employee>
 
         try
         {
-            this.dateOfBirth = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
+            this.dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
         }
         catch (ParseException e)
         {
@@ -45,7 +45,7 @@ public class Employee implements Comparable<Employee>
 
         try
         {
-            this.dateOfJoining = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(data[8]);
+            this.dateOfJoining = new SimpleDateFormat("dd/MM/yyyy").parse(data[8]);
         }
         catch (ParseException e)
         {

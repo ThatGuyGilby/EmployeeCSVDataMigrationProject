@@ -1,11 +1,15 @@
 package com.teamsix.employees;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeReader
 {
+    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
     public EmployeeReader()
@@ -21,8 +25,9 @@ public class EmployeeReader
     public List<Employee> getValue()
     {
         String line = "";
-        List<Employee> employees = new ArrayList<Employee>();
-        List<Employee> rejects = new ArrayList<Employee>();
+        List<Employee> employees = new ArrayList<>();
+        List<Employee> duplicates = new ArrayList<>();
+        List<Employee> emptyFields = new ArrayList<>();
 
         try
         {
@@ -33,9 +38,14 @@ public class EmployeeReader
             {
                 String[] values = line.replaceAll("\\s", "").split(",");
                 Employee employee = new Employee(values);
-                if (employeeExists(employee, employees))
+
+                if (entryHasEmptyFields(values))
                 {
-                    rejects.add(employee);
+                    emptyFields.add(employee);
+                }
+                else if (employeeExists(employee, employees))
+                {
+                    duplicates.add(employee);
                 }
                 else
                 {
@@ -43,13 +53,20 @@ public class EmployeeReader
                 }
             }
 
-            System.out.println(employees.size());
-            System.out.println(rejects.size());
+            StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\nNumber of clean records: ");
+            readerResults.append(employees.size());
+            readerResults.append("\nNumber of duplicate records: ");
+            readerResults.append(duplicates.size());
+            readerResults.append("\nNumber of records with empty fields: ");
+            readerResults.append(emptyFields.size());
+            logger.info(readerResults.toString());
+
             return employees;
         } catch (IOException e)
         {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -59,6 +76,19 @@ public class EmployeeReader
         {
             Employee thisEmployee = employees.get(i);
             if (thisEmployee.empID == employee.empID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean entryHasEmptyFields(String[] entries)
+    {
+        for (String entry : entries)
+        {
+            if (entry == "")
             {
                 return true;
             }
