@@ -2,12 +2,12 @@ package com.teamsix.employees;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+//import java.util.Date;
+import java.sql.Date;
 import java.util.Locale;
 
-public class Employee
+public class Employee implements Comparable<Employee>
 {
     public int empID;
     public String namePrefix;
@@ -33,21 +33,25 @@ public class Employee
         String[] birthday = data[7].split("/");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd", Locale.ENGLISH);
         StringBuilder stringBuilder = new StringBuilder(birthday[2]).append("-").append(birthday[0]).append("-").append(birthday[1]);
+
         try
         {
-            this.dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
+            this.dateOfBirth = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
         }
         catch (ParseException e)
         {
             e.printStackTrace();
         }
+
         try
         {
-            this.dateOfJoining = new SimpleDateFormat("dd/MM/yyyy").parse(data[8]);
+            this.dateOfJoining = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(data[8]);
         }
-        catch (ParseException e) {
+        catch (ParseException e)
+        {
             e.printStackTrace();
         }
+
         this.salary = Integer.parseInt(data[9]);
     }
 
@@ -74,5 +78,21 @@ public class Employee
         stringBuilder.append(salary);
 
         return stringBuilder.toString();
+    }
+
+    @Override
+    public int compareTo(Employee o)
+    {
+        if (o.empID > empID)
+        {
+            return -1;
+        }
+
+        if (o.empID < empID)
+        {
+            return 1;
+        }
+
+        return 0;
     }
 }

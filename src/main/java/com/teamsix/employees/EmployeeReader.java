@@ -22,6 +22,7 @@ public class EmployeeReader
     {
         String line = "";
         List<Employee> employees = new ArrayList<Employee>();
+        List<Employee> rejects = new ArrayList<Employee>();
 
         try
         {
@@ -32,13 +33,37 @@ public class EmployeeReader
             {
                 String[] values = line.replaceAll("\\s", "").split(",");
                 Employee employee = new Employee(values);
-                employees.add(employee);
+                if (employeeExists(employee, employees))
+                {
+                    rejects.add(employee);
+                }
+                else
+                {
+                    employees.add(employee);
+                }
             }
+
+            System.out.println(employees.size());
+            System.out.println(rejects.size());
             return employees;
         } catch (IOException e)
         {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean employeeExists(Employee employee, List<Employee> employees)
+    {
+        for (int i = 0; i < employees.size(); i++)
+        {
+            Employee thisEmployee = employees.get(i);
+            if (thisEmployee.empID == employee.empID)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
