@@ -70,9 +70,8 @@ public class Employee
         stringBuilder.append(dateOfBirth);
         stringBuilder.append(" | ");
         stringBuilder.append(dateOfJoining);
-        stringBuilder.append(" | ");
-        stringBuilder.append(salary);
         stringBuilder.append(" | $");
+        stringBuilder.append(salary);
 
         return stringBuilder.toString();
     }
