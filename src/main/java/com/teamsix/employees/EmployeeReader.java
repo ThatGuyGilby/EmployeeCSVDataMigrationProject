@@ -12,9 +12,17 @@ public class EmployeeReader
     public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
+    List<Employee> cleanEntries;
+    List<Employee> duplicateEntries;
+    List<Employee> invalidEntries;
+
     public EmployeeReader()
     {
         pathToReadCSVFrom = "";
+
+        cleanEntries = new ArrayList<>();
+        duplicateEntries = new ArrayList<>();
+        invalidEntries = new ArrayList<>();
     }
 
     public void setPathToReadCSVFrom(String pathToReadCSVFrom)
@@ -25,9 +33,9 @@ public class EmployeeReader
     public List<Employee> getValue()
     {
         String line = "";
-        List<Employee> cleanEntries = new ArrayList<>();
-        List<Employee> duplicateEntries = new ArrayList<>();
-        List<Employee> invalidEntries = new ArrayList<>();
+        cleanEntries = new ArrayList<>();
+        duplicateEntries = new ArrayList<>();
+        invalidEntries = new ArrayList<>();
 
         try
         {

@@ -2,9 +2,7 @@ package com.teamsix.employees;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 
 public class Employee implements Comparable<Employee>
 {
