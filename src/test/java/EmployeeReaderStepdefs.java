@@ -37,19 +37,4 @@ public class EmployeeReaderStepdefs {
     {
         Assertions.assertNotNull(employees);
     }
-
-    @Then("the result should be a distinct list of employees")
-    public void theResultShouldBeADistinctListOfEmployees()
-    {
-        boolean hasDuplicates = false;
-
-        Set<Employee> lump = new HashSet<Employee>();
-        for (Employee i : employees)
-        {
-            if (lump.contains(i)) hasDuplicates = true;
-            lump.add(i);
-        }
-
-        Assertions.assertEquals(hasDuplicates, "false");
-    }
 }
