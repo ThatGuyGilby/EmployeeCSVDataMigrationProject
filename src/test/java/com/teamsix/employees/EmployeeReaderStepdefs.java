@@ -1,3 +1,5 @@
+package com.teamsix.employees;
+
 import com.teamsix.employees.Employee;
 import com.teamsix.employees.EmployeeReader;
 import io.cucumber.java.en.And;
@@ -16,6 +18,8 @@ public class EmployeeReaderStepdefs
 {
     EmployeeReader reader;
     List<Employee> employees;
+    String name;
+    String surname;
 
     @Given("I have a reader")
     public void iHaveAReader()
@@ -26,7 +30,7 @@ public class EmployeeReaderStepdefs
     @And("I give the reader a file name")
     public void iGiveTheReaderAFileName()
     {
-        reader.setPathToReadCSVFrom("E://AdmiralJava-main/EmployeeCSV/project-docs/EmployeeRecords.csv");
+        reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
     }
 
     @When("I call the getValue function")
@@ -59,6 +63,15 @@ public class EmployeeReaderStepdefs
             }
         }
 
-        Assert.assertEquals(duplicateFound, false);
+        Assert.assertFalse(duplicateFound);
+    }
+
+    @Then("names and surnames should have only letters")
+    public void namesAndSurnamesShouldHaveOnlyLetters() {
+        for(Employee employee: employees){
+            if (!(employee.firstName+employee.lastName).matches("^[a-zA-Z]*$")){
+                Assertions.fail();
+            }
+        }
     }
 }
