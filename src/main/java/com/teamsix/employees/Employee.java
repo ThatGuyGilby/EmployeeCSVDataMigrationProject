@@ -29,10 +29,6 @@ public class Employee implements Comparable<Employee>
         this.gender = data[5].charAt(0);
         this.email = data[6];
 
-        String[] birthday = data[7].split("/");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd", Locale.ENGLISH);
-        StringBuilder stringBuilder = new StringBuilder(birthday[2]).append("-").append(birthday[0]).append("-").append(birthday[1]);
-
         try
         {
             this.dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
