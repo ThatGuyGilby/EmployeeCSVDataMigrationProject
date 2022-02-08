@@ -22,7 +22,7 @@ User the provided EmployeeRecords.csv for your testing and optionally create you
 
 [⮬ Table of Contents](#table-of-contents)
 
-#Phase 2 – Persist to Database
+# Phase 2 – Persist to Database
 
 Write the SQL statements to create a table and to persist data to that table. If the table exists, it will need to be dropped first.
 Install the drivers for the database to be used (MySQL) and create a connection.
@@ -31,7 +31,7 @@ Persist employee records and write code to retrieve individual records from the 
 
 [⮬ Table of Contents](#table-of-contents)
 
-#Phase 3 – Add Multithreading
+# Phase 3 – Add Multithreading
 
 Use the second file, EmployeeRecordsLarge.csv, which can be assumed to have already been cleaned.
 Record time taken to persist before implementing multiple threads.
@@ -40,7 +40,7 @@ Try different numbers of threads and compare the results – what is the optimum
 
 [⮬ Table of Contents](#table-of-contents)
 
-#Phase 4 - Add Streams and Lambdas
+# Phase 4 - Add Streams and Lambdas
 
 Modify code to make use of functional programming concepts – lambdas and streams.
 Keep the original code and then run tests to see if efficiency has improved by adding functional code.
