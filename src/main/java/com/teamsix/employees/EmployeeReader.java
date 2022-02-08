@@ -12,9 +12,24 @@ public class EmployeeReader
     public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
-    List<Employee> cleanEntries;
-    List<Employee> duplicateEntries;
-    List<Employee> invalidEntries;
+    private List<Employee> cleanEntries;
+    private List<Employee> duplicateEntries;
+    private List<Employee> invalidEntries;
+
+    public List<Employee> getCleanEntries()
+    {
+        return cleanEntries;
+    }
+
+    public List<Employee> getDuplicateEntries()
+    {
+        return duplicateEntries;
+    }
+
+    public List<Employee> getInvalidEntries()
+    {
+        return invalidEntries;
+    }
 
     public EmployeeReader()
     {
