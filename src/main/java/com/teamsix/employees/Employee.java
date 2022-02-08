@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Employee implements Comparable<Employee>
+public class Employee
 {
     public int empID;
     public String namePrefix;
@@ -71,21 +71,5 @@ public class Employee implements Comparable<Employee>
         stringBuilder.append(salary);
 
         return stringBuilder.toString();
-    }
-
-    @Override
-    public int compareTo(Employee o)
-    {
-        if (o.empID > empID)
-        {
-            return -1;
-        }
-
-        if (o.empID < empID)
-        {
-            return 1;
-        }
-
-        return 0;
     }
 }

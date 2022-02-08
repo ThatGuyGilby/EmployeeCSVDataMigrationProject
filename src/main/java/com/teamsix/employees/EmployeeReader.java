@@ -92,7 +92,8 @@ public class EmployeeReader
             logger.info(readerResults.toString());
 
             return cleanEntries;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
