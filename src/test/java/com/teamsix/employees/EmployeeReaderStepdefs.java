@@ -1,3 +1,5 @@
+package com.teamsix.employees;
+
 import com.teamsix.employees.Employee;
 import com.teamsix.employees.EmployeeReader;
 import io.cucumber.java.en.And;
@@ -15,6 +17,8 @@ import java.util.Set;
 public class EmployeeReaderStepdefs {
     EmployeeReader reader;
     List<Employee> employees;
+    String name;
+    String surname;
 
     @Given("I have a reader")
     public void iHaveAReader()
@@ -58,6 +62,15 @@ public class EmployeeReaderStepdefs {
             }
         }
 
-        Assert.assertEquals(duplicateFound, false);
+        Assert.assertFalse(duplicateFound);
+    }
+
+    @Then("names and surnames should have only letters")
+    public void namesAndSurnamesShouldHaveOnlyLetters() {
+        for(Employee employee: employees){
+            if (!(employee.firstName+employee.lastName).matches("^[a-zA-Z]*$")){
+                Assertions.fail();
+            }
+        }
     }
 }
