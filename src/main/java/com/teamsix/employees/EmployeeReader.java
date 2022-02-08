@@ -12,9 +12,32 @@ public class EmployeeReader
     public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
+    private List<Employee> cleanEntries;
+    private List<Employee> duplicateEntries;
+    private List<Employee> invalidEntries;
+
+    public List<Employee> getCleanEntries()
+    {
+        return cleanEntries;
+    }
+
+    public List<Employee> getDuplicateEntries()
+    {
+        return duplicateEntries;
+    }
+
+    public List<Employee> getInvalidEntries()
+    {
+        return invalidEntries;
+    }
+
     public EmployeeReader()
     {
         pathToReadCSVFrom = "";
+
+        cleanEntries = new ArrayList<>();
+        duplicateEntries = new ArrayList<>();
+        invalidEntries = new ArrayList<>();
     }
 
     public void setPathToReadCSVFrom(String pathToReadCSVFrom)
@@ -25,9 +48,9 @@ public class EmployeeReader
     public List<Employee> getValue()
     {
         String line = "";
-        List<Employee> employees = new ArrayList<>();
-        List<Employee> duplicates = new ArrayList<>();
-        List<Employee> emptyFields = new ArrayList<>();
+        cleanEntries = new ArrayList<>();
+        duplicateEntries = new ArrayList<>();
+        invalidEntries = new ArrayList<>();
 
         try
         {
@@ -41,27 +64,34 @@ public class EmployeeReader
 
                 if (entryHasEmptyFields(values))
                 {
-                    emptyFields.add(employee);
+                    invalidEntries.add(employee);
                 }
-                else if (employeeExists(employee, employees))
+                else if (employeeExists(employee, cleanEntries))
                 {
-                    duplicates.add(employee);
+                    duplicateEntries.add(employee);
                 }
                 else
                 {
-                    employees.add(employee);
+                    cleanEntries.add(employee);
                 }
             }
 
             StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\nNumber of clean records: ");
-            readerResults.append(employees.size());
+            readerResults.append(cleanEntries.size());
             readerResults.append("\nNumber of duplicate records: ");
-            readerResults.append(duplicates.size());
+            readerResults.append(duplicateEntries.size());
             readerResults.append("\nNumber of records with empty fields: ");
-            readerResults.append(emptyFields.size());
+            readerResults.append(invalidEntries.size());
+            readerResults.append("\n\nDuplicate Result\n");
+
+            for (int i = 0; i < duplicateEntries.size(); i++)
+            {
+                readerResults.append(duplicateEntries.get(i));
+            }
+
             logger.info(readerResults.toString());
 
-            return employees;
+            return cleanEntries;
         } catch (IOException e)
         {
             e.printStackTrace();
