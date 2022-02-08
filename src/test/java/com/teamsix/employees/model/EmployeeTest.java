@@ -1,4 +1,4 @@
-package com.teamsix.employees;
+package com.teamsix.employees.model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
