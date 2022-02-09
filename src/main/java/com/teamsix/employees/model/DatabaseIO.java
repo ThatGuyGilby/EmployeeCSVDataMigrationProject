@@ -46,13 +46,25 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            System.out.println("");
-            Vector<List<Employee>> subSets = splitListIntoChunks(8, employees);
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
+                            "VALUES (?,?,?,?,?,?,?,?,?,?)");
 
-            for (int i = 0; i < subSets.size(); i++)
-            {
-                statement.executeUpdate(buildInsertStatement(subSets.get(i)));
+            for (int i = 0; i < employees.size(); i++){
+                preparedStatement.setInt(1, employees.get(i).getEmpID());
+                preparedStatement.setString(2, employees.get(i).getNamePrefix());
+                preparedStatement.setString(3, employees.get(i).getFirstName());
+                preparedStatement.setString(4, String.valueOf(employees.get(i).getMiddleInitial()));
+                preparedStatement.setString(5, employees.get(i).getLastName());
+                preparedStatement.setString(6, String.valueOf(employees.get(i).getGender()));
+                preparedStatement.setString(7, employees.get(i).getEmail());
+                preparedStatement.setDate(8, employees.get(i).getDateOfBirth());
+                preparedStatement.setDate(9, employees.get(i).getDateOfJoining());
+                preparedStatement.setFloat(10, employees.get(i).getSalary());
+                System.out.println(i);
+                preparedStatement.executeUpdate();
             }
+
         }
         catch (SQLException e)
         {
@@ -60,33 +72,33 @@ public class DatabaseIO
         }
     }
 
-    public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
-    {
-        Vector<List<Employee>> subSets = new Vector<>();
-        int chunkSize = list.size() / chunks;
-
-        for (int i = 0; i < chunks; i++)
-        {
-            if (i == 0)
-            {
-                subSets.add(list.subList(0, chunkSize));
-                System.out.println("Chunk " + i + " from 0 - " + chunkSize);
-            }
-            else if (i < chunks - 1)
-            {
-                subSets.add(list.subList((chunkSize * i) + 1, (chunkSize * (i + 1))));;
-                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + (chunkSize * (i + 1)));
-            }
-            else
-            {
-                subSets.add(list.subList((chunkSize * i) + 1, list.size()));;
-                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + list.size());
-                System.out.println("");
-            }
-        }
-
-        return subSets;
-    }
+//    public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+//    {
+//        Vector<List<Employee>> subSets = new Vector<>();
+//        int chunkSize = list.size() / chunks;
+//
+//        for (int i = 0; i < chunks; i++)
+//        {
+//            if (i == 0)
+//            {
+//                subSets.add(list.subList(0, chunkSize));
+//                System.out.println("Chunk " + i + " from 0 - " + chunkSize);
+//            }
+//            else if (i < chunks - 1)
+//            {
+//                subSets.add(list.subList((chunkSize * i) + 1, (chunkSize * (i + 1))));;
+//                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + (chunkSize * (i + 1)));
+//            }
+//            else
+//            {
+//                subSets.add(list.subList((chunkSize * i) + 1, list.size()));;
+//                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + list.size());
+//                System.out.println("");
+//            }
+//        }
+//
+//        return subSets;
+//    }
 
     public static Employee getEmployee(int empID)
     {
