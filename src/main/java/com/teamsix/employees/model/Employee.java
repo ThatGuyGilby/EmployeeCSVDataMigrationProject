@@ -12,7 +12,7 @@ public class Employee
 {
     // these variables need to be made private but they are used in tests,
     // just add a getter and switch the usage in tese code
-    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+    private static Logger logger = LogManager.getLogger(Employee.class.getName());
 
     private int empID;
     private String namePrefix;
