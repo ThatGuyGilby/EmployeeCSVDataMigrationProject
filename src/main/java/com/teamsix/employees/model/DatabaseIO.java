@@ -16,29 +16,22 @@ public class DatabaseIO
 {
     public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
 
-    private static Connection connection;
-    private static Statement statement;
-    private static EmployeeReader reader;
     private static List<Employee> employees;
 
     public static void linkToSQLDatabase()
     {
-        reader = new EmployeeReader();
+        EmployeeReader reader = new EmployeeReader();
         reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
         employees = reader.getValue();
 
-        try (InputStream inputStream = new FileInputStream("src/main/resources/mysql.properties"))
+        try
         {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-            connection = DriverManager.getConnection(properties.getProperty("dburl"), properties.getProperty("dbuserid"), properties.getProperty("dbpassword"));
-
-            statement = connection.createStatement();
+            Connection connection = ConnectionFactory.getConnection();
+            Statement statement = connection.createStatement();
         }
-        catch (SQLException | IOException e)
+        catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
     }
 
@@ -46,6 +39,9 @@ public class DatabaseIO
     {
         try
         {
+            Connection connection = ConnectionFactory.getConnection();
+            Statement statement = connection.createStatement();
+
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
@@ -61,6 +57,9 @@ public class DatabaseIO
     {
         try
         {
+            Connection connection = ConnectionFactory.getConnection();
+            Statement statement = connection.createStatement();
+
             List<Employee> employeeList = new ArrayList<>();
             String builtSQlRequest = buildSelectSpecificEmployee(empID);
 
@@ -68,8 +67,11 @@ public class DatabaseIO
 
             ResultSet resultSet = statement.executeQuery(builtSQlRequest);
             resultSet.next();
+            Employee employeeToReturn = new Employee(resultSet);
 
-            return new Employee(resultSet);
+            resultSet.close();
+
+            return employeeToReturn;
         }
         catch (SQLException e)
         {
@@ -83,6 +85,9 @@ public class DatabaseIO
     {
         try
         {
+            Connection connection = ConnectionFactory.getConnection();
+            Statement statement = connection.createStatement();
+
             List<Employee> employeeList = new ArrayList<>();
             String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
 
@@ -94,6 +99,8 @@ public class DatabaseIO
             {
                 employeeList.add(new Employee(resultSet));
             }
+
+            resultSet.close();
 
             return employeeList;
         }
