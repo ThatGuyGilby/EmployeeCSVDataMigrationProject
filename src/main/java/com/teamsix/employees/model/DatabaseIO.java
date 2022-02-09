@@ -3,14 +3,10 @@ package com.teamsix.employees.model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Vector;
 
 public class DatabaseIO
 {
@@ -45,12 +41,46 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            statement.executeUpdate(buildInsertStatement(employees));
+            System.out.println("");
+            Vector<List<Employee>> subSets = splitListIntoChunks(4, employees);
+
+            for (int i = 0; i < subSets.size(); i++)
+            {
+                statement.executeUpdate(buildInsertStatement(subSets.get(i)));
+            }
         }
         catch (SQLException e)
         {
             logger.error(e.toString());
         }
+    }
+
+    public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    {
+        Vector<List<Employee>> subSets = new Vector<>();
+        int chunkSize = list.size() / chunks;
+
+        for (int i = 0; i < chunks; i++)
+        {
+            if (i == 0)
+            {
+                subSets.add(list.subList(0, chunkSize));
+                System.out.println("Chunk " + i + " from 0 - " + chunkSize);
+            }
+            else if (i < chunks - 1)
+            {
+                subSets.add(list.subList((chunkSize * i) + 1, (chunkSize * (i + 1))));;
+                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + (chunkSize * (i + 1)));
+            }
+            else
+            {
+                subSets.add(list.subList((chunkSize * i) + 1, list.size()));;
+                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + list.size());
+                System.out.println("");
+            }
+        }
+
+        return subSets;
     }
 
     public static Employee getEmployee(int empID)
@@ -86,6 +116,7 @@ public class DatabaseIO
         try
         {
             Connection connection = ConnectionFactory.getConnection();
+            connection.setAutoCommit(false); // hacky efficiency code
             Statement statement = connection.createStatement();
 
             List<Employee> employeeList = new ArrayList<>();
@@ -101,6 +132,7 @@ public class DatabaseIO
             }
 
             resultSet.close();
+            connection.setAutoCommit(true); // hacky efficiency code
 
             return employeeList;
         }

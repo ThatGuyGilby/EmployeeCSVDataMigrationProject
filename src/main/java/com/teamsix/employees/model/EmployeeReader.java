@@ -65,8 +65,9 @@ public class EmployeeReader
             return employees;
 
         }
-        catch (IOException e){
-            e.printStackTrace();
+        catch (IOException e)
+        {
+            logger.error(e.toString());
         }
 
 

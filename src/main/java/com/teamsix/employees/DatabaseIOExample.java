@@ -13,12 +13,11 @@ public class DatabaseIOExample
         DatabaseIO.linkToSQLDatabase();
         DatabaseIO.persistEmployees();
 
-        System.out.println("");
-        Employee employee = DatabaseIO.getEmployee(111282);
+        Employee employee = DatabaseIO.getEmployee(14);
         System.out.println(employee);
 
         System.out.println("");
-        List<Employee> employees = DatabaseIO.getEmployees(new int[] {111282, 111498, 114311});
+        List<Employee> employees = DatabaseIO.getEmployees(new int[] {15, 13, 25});
 
         for (int i = 0; i < employees.size(); i++)
         {

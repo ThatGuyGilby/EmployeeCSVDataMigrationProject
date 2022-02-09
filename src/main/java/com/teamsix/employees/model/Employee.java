@@ -1,5 +1,8 @@
 package com.teamsix.employees.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -9,6 +12,8 @@ public class Employee
 {
     // these variables need to be made private but they are used in tests,
     // just add a getter and switch the usage in tese code
+    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+
     public int empID;
     public String namePrefix;
     public String firstName;
@@ -40,7 +45,7 @@ public class Employee
         }
         catch (ParseException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
 
         try
@@ -53,7 +58,7 @@ public class Employee
         }
         catch (ParseException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
 
         this.salary = Integer.parseInt(data[9]);
@@ -76,7 +81,7 @@ public class Employee
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
     }
 
