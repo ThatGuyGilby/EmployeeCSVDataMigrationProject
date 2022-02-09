@@ -1,5 +1,7 @@
 package com.teamsix.employees.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -55,6 +57,27 @@ public class Employee
         }
 
         this.salary = Integer.parseInt(data[9]);
+    }
+
+    public Employee(ResultSet resultSet)
+    {
+        try
+        {
+            this.empID = resultSet.getInt("empID");
+            this.namePrefix = resultSet.getString("namePrefix");
+            this.firstName = resultSet.getString("firstName");
+            this.middleInitial = resultSet.getString("middleInitial").charAt(0);
+            this.lastName = resultSet.getString("lastName");
+            this.gender = resultSet.getString("gender").charAt(0);
+            this.email = resultSet.getString("email");
+            this.dateOfBirth = resultSet.getDate("dateOfBirth");
+            this.dateOfJoining = resultSet.getDate("dateOfJoining");
+            this.salary = resultSet.getFloat("salary");
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

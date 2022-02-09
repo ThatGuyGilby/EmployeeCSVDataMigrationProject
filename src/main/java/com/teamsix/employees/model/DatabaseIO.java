@@ -1,9 +1,7 @@
 package com.teamsix.employees.model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseIO
@@ -38,15 +36,34 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            for (Employee employee : employees)
-            {
-                statement.executeUpdate(buildInsertStatement(employee));
-            }
+            statement.executeUpdate(buildInsertStatement(employees));
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
+    }
+
+    public static Employee getEmployee(int empID)
+    {
+        try
+        {
+            List<Employee> employeeList = new ArrayList<>();
+            String builtSQlRequest = buildSelectSpecificEmployee(empID);
+
+            System.out.println(builtSQlRequest);
+
+            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
+            resultSet.next();
+
+            return new Employee(resultSet);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static String buildInsertStatement(Employee employee)
@@ -58,6 +75,40 @@ public class DatabaseIO
         stringBuilder.append("(");
         stringBuilder.append(employee.toString());
         stringBuilder.append(")");
+
+        return stringBuilder.toString();
+    }
+
+    public static String buildInsertStatement(List<Employee> employeesToPersist)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
+        stringBuilder.append("VALUES\n");
+
+        for (int i = 0; i < employeesToPersist.size(); i++)
+        {
+            Employee employeeToPersist = employeesToPersist.get(i);
+
+            if (i > 0)
+            {
+                stringBuilder.append((",\n"));
+            }
+
+            stringBuilder.append("(");
+            stringBuilder.append(employeeToPersist.toString());
+            stringBuilder.append(")");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static String buildSelectSpecificEmployee(int empID)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SELECT * FROM `employees`");
+        stringBuilder.append("\nWHERE empID = ");
+        stringBuilder.append(empID);
+        stringBuilder.append(";");
 
         return stringBuilder.toString();
     }
