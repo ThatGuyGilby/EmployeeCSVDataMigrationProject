@@ -1,4 +1,4 @@
-package com.teamsix.employees.model;
+package com.teamsix.employees.database;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,5 +1,7 @@
-package com.teamsix.employees.model;
+package com.teamsix.employees.database;
 
+import com.teamsix.employees.model.Employee;
+import com.teamsix.employees.model.EmployeeReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -125,18 +127,18 @@ public class DatabaseIO
             Statement statement = connection.createStatement();
 
             List<Employee> employeeList = new ArrayList<>();
-            String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
+//             String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
 
-            System.out.println(builtSQlRequest);
+//             System.out.println(builtSQlRequest);
 
-            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
+//             ResultSet resultSet = statement.executeQuery(builtSQlRequest);
 
-            while (resultSet.next())
-            {
-                employeeList.add(new Employee(resultSet));
-            }
-
-            resultSet.close();
+//            while (resultSet.next())
+//            {
+//                employeeList.add(new Employee(resultSet));
+//            }
+//
+//            resultSet.close();
             connection.setAutoCommit(true); // hacky efficiency code
 
             return employeeList;
@@ -149,18 +151,7 @@ public class DatabaseIO
         return null;
     }
 
-    public static String buildInsertStatement(Employee employee)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
-        stringBuilder.append("VALUES\n");
 
-        stringBuilder.append("(");
-        stringBuilder.append(employee.toString());
-        stringBuilder.append(")");
-
-        return stringBuilder.toString();
-    }
 
     public static String buildInsertStatement(List<Employee> employeesToPersist)
     {
@@ -196,48 +187,45 @@ public class DatabaseIO
         return stringBuilder.toString();
     }
 
-    public static String buildSelectMultipleEmployees(int[] empIDs)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SELECT * FROM `employees`");
-        stringBuilder.append("\nWHERE ");
-
-        for (int i = 0; i < empIDs.length; i++)
-        {
-            stringBuilder.append("empID = ");
-            stringBuilder.append(empIDs[i]);
-
-            if (i < empIDs.length - 1)
-            {
-                stringBuilder.append(" || ");
-            }
-        }
-
-        stringBuilder.append(";");
-
-        return stringBuilder.toString();
-    }
+//    public static String buildSelectMultipleEmployees(int[] empIDs)
+//    {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append("SELECT * FROM `employees`");
+//        stringBuilder.append("\nWHERE ");
+//
+//        for (int i = 0; i < empIDs.length; i++)
+//        {
+//            stringBuilder.append("empID = ");
+//            stringBuilder.append(empIDs[i]);
+//
+//            if (i < empIDs.length - 1)
+//            {
+//                stringBuilder.append(" || ");
+//            }
+//        }
+//
+//        stringBuilder.append(";");
+//
+//        return stringBuilder.toString();
+//    }
 
     public static String buildCreateStatement()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(
-                "CREATE TABLE `employees` (\n" +
-                        "  `empID` int NOT NULL,\n" +
-                        "  `namePrefix` varchar(5) DEFAULT NULL,\n" +
-                        "  `firstName` varchar(45) DEFAULT NULL,\n" +
-                        "  `middleInitial` char(1) DEFAULT NULL,\n" +
-                        "  `lastName` varchar(45) DEFAULT NULL,\n" +
-                        "  `gender` char(1) DEFAULT NULL,\n" +
-                        "  `email` varchar(45) DEFAULT NULL,\n" +
-                        "  `dateOfBirth` date DEFAULT NULL,\n" +
-                        "  `dateOfJoining` date DEFAULT NULL,\n" +
-                        "  `salary` decimal(10,0) DEFAULT NULL,\n" +
-                        "  PRIMARY KEY (`empID`)\n" +
-                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n"
-        );
 
-        return  stringBuilder.toString();
+        String s = "CREATE TABLE `employees` (\n" +
+                "  `empID` int NOT NULL,\n" +
+                "  `namePrefix` varchar(5) DEFAULT NULL,\n" +
+                "  `firstName` varchar(45) DEFAULT NULL,\n" +
+                "  `middleInitial` char(1) DEFAULT NULL,\n" +
+                "  `lastName` varchar(45) DEFAULT NULL,\n" +
+                "  `gender` char(1) DEFAULT NULL,\n" +
+                "  `email` varchar(45) DEFAULT NULL,\n" +
+                "  `dateOfBirth` date DEFAULT NULL,\n" +
+                "  `dateOfJoining` date DEFAULT NULL,\n" +
+                "  `salary` decimal(10,0) DEFAULT NULL,\n" +
+                "  PRIMARY KEY (`empID`)\n" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n";
+        return s;
     }
 
     public static String buildDropStatement()

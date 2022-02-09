@@ -1,7 +1,5 @@
-package com.teamsix.employees;
+package com.teamsix.employees.database;
 
-import com.teamsix.employees.model.ConnectionFactory;
-import com.teamsix.employees.model.DatabaseIO;
 import com.teamsix.employees.model.Employee;
 
 import java.util.List;
@@ -20,13 +18,13 @@ public class DatabaseIOExample
         System.out.println(employee);
 
         System.out.println("");
-        List<Employee> employees = DatabaseIO.getEmployees(new int[] {877054, 496055, 788619});
+//         List<Employee> employees = DatabaseIO.getEmployees(new int[] {877054, 496055, 788619});
 
-        for (int i = 0; i < employees.size(); i++)
-        {
-            Employee employeeToOutput = employees.get(i);
-            System.out.println(employeeToOutput.toString());
-        }
+//        for (int i = 0; i < employees.size(); i++)
+//        {
+//            Employee employeeToOutput = employees.get(i);
+//            System.out.println(employeeToOutput.toString());
+//        }
 
         ConnectionFactory.closeConnection();
     }
