@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 
 public class Employee
 {
+    // these variables need to be made private but they are used in tests,
+    // just add a getter and switch the usage in tese code
     public int empID;
     public String namePrefix;
     public String firstName;
