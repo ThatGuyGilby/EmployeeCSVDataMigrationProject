@@ -10,8 +10,8 @@
 
 [⮬ Table of Contents](#table-of-contents)
 
-# Phase 1 – Initial Reading and Cleaning
-
+# Phase 1
+### Initial Reading and Cleaning
 - Create a new project and write code to read data from an Employee CSV file.
 - As it is read in, add each record read to a new object of a suitable class and then add those objects to a collection.
 - Any corrupt or duplicated data should be added to a separate collection for further analysis.
@@ -22,8 +22,8 @@
 
 [⮬ Table of Contents](#table-of-contents)
 
-# Phase 2 – Persist to Database
-
+# Phase 2
+### Persist to Database
 - Write the SQL statements to create a table and to persist data to that table. If the table exists, it will need to be dropped first.
 - Install the drivers for the database to be used (MySQL) and create a connection.
 - Create a data access object (DAO pattern) to persist the data to the database.
@@ -31,8 +31,8 @@
 
 [⮬ Table of Contents](#table-of-contents)
 
-# Phase 3 – Add Multithreading
-
+# Phase 3
+### Add Multithreading
 - Use the second file, EmployeeRecordsLarge.csv, which can be assumed to have already been cleaned.
 - Record time taken to persist before implementing multiple threads.
 - Add multithreading to your application to write the data to the database, comparing the execution time with the single-threaded version.
@@ -40,8 +40,8 @@
 
 [⮬ Table of Contents](#table-of-contents)
 
-# Phase 4 - Add Streams and Lambdas
-
+# Phase 4
+### Add Streams and Lambdas
 - Modify code to make use of functional programming concepts – lambdas and streams.
 - Keep the original code and then run tests to see if efficiency has improved by adding functional code.
 
