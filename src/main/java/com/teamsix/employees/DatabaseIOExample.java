@@ -11,7 +11,7 @@ public class DatabaseIOExample
     public static void main(String[] args)
     {
         DatabaseIO.linkToSQLDatabase();
-        //DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries();
 
         Employee employee = DatabaseIO.getEmployee(877054);
         System.out.println(employee);
