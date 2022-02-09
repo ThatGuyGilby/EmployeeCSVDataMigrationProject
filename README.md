@@ -36,7 +36,7 @@ Relevant Classes
 Relevant Classes
 - [ConnectionFactory.java](../dev/src/main/java/com/teamsix/employees/model/ConnectionFactory.java)
 - [DatabaseIO.java](../dev/src/main/java/com/teamsix/employees/model/DatabaseIO.java)
-- [DatabaseIOExample.java](../dev/src/main/java/com/teamsix/employees/model/DatabaseIOExample.java)
+- [DatabaseIOExample.java](../dev/src/main/java/com/teamsix/employees/DatabaseIOExample.java)
 
 [⮬ Table of Contents](#table-of-contents)
 
