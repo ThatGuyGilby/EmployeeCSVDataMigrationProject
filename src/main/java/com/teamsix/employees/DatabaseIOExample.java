@@ -13,14 +13,14 @@ public class DatabaseIOExample
         DatabaseIO.linkToSQLDatabase();
 
         long startTime = System.nanoTime();
-        DatabaseIO.persistEmployees();
+        DatabaseIO.writeEmployeeEntries();
         DatabaseIO.logExecutionTime(startTime);
 
-        Employee employee = DatabaseIO.getEmployee(14);
+        Employee employee = DatabaseIO.getEmployee(877054);
         System.out.println(employee);
 
         System.out.println("");
-        List<Employee> employees = DatabaseIO.getEmployees(new int[] {15, 13, 25});
+        List<Employee> employees = DatabaseIO.getEmployees(new int[] {877054, 496055, 788619});
 
         for (int i = 0; i < employees.size(); i++)
         {

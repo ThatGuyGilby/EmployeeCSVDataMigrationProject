@@ -16,9 +16,7 @@ public class DatabaseIO
 
     public static void linkToSQLDatabase()
     {
-        EmployeeReader reader = new EmployeeReader();
-        reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
-        employees = reader.getValue();
+        ReadEmployeesFromFile();
 
         try
         {
@@ -31,7 +29,14 @@ public class DatabaseIO
         }
     }
 
-    public static void persistEmployees()
+    private static void ReadEmployeesFromFile()
+    {
+        EmployeeReader reader = new EmployeeReader();
+        reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
+        employees = reader.getValue();
+    }
+
+    public static void writeEmployeeEntries()
     {
         try
         {
@@ -42,7 +47,7 @@ public class DatabaseIO
             statement.executeUpdate(buildCreateStatement());
 
             System.out.println("");
-            Vector<List<Employee>> subSets = splitListIntoChunks(4, employees);
+            Vector<List<Employee>> subSets = splitListIntoChunks(8, employees);
 
             for (int i = 0; i < subSets.size(); i++)
             {
@@ -250,7 +255,7 @@ public class DatabaseIO
         StringBuilder stringBuilder = new StringBuilder("Execution time: ");
         stringBuilder.append(executionNanoTime);
         stringBuilder.append("ns | ");
-        stringBuilder.append(Math.round(executionNanoTime * 0.000000001));
+        stringBuilder.append(executionNanoTime * 0.000000001);
         stringBuilder.append("s");
         logger.info(stringBuilder.toString());
     }
