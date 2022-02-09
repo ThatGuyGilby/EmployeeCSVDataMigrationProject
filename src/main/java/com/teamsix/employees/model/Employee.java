@@ -42,6 +42,14 @@ public class Employee
         return email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
 
     public Employee(String[] data)
     {

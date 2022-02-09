@@ -49,9 +49,9 @@ public class EmployeeReaderStepdefs
 
         for (int i = 0; i < employees.size(); i++)
         {
-            if (!usedIDs.contains(employees.get(i).empID))
+            if (!usedIDs.contains(employees.get(i).getEmpID()))
             {
-                usedIDs.add(employees.get(i).empID);
+                usedIDs.add(employees.get(i).getEmpID());
             }
             else
             {
@@ -65,7 +65,7 @@ public class EmployeeReaderStepdefs
     @Then("names and surnames should have only letters")
     public void namesAndSurnamesShouldHaveOnlyLetters() {
         for(Employee employee: employees){
-            if (!(employee.firstName+employee.lastName).matches("^[a-zA-Z]*$")){
+            if (!(employee.getFirstName()+employee.getLastName()).matches("^[a-zA-Z]*$")){
                 Assertions.fail();
             }
         }
