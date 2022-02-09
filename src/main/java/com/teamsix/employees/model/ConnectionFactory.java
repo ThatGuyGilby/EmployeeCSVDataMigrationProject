@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class ConnectionFactory
 {
-    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+    private static Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
     private static Connection connection = null;
 
     public static Connection getConnection()
