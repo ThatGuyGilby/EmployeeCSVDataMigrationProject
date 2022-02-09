@@ -66,6 +66,32 @@ public class DatabaseIO
         return null;
     }
 
+    public static List<Employee> getEmployees(int[] empIDs)
+    {
+        try
+        {
+            List<Employee> employeeList = new ArrayList<>();
+            String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
+
+            System.out.println(builtSQlRequest);
+
+            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
+
+            while (resultSet.next())
+            {
+                employeeList.add(new Employee(resultSet));
+            }
+
+            return employeeList;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static String buildInsertStatement(Employee employee)
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -108,6 +134,28 @@ public class DatabaseIO
         stringBuilder.append("SELECT * FROM `employees`");
         stringBuilder.append("\nWHERE empID = ");
         stringBuilder.append(empID);
+        stringBuilder.append(";");
+
+        return stringBuilder.toString();
+    }
+
+    public static String buildSelectMultipleEmployees(int[] empIDs)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SELECT * FROM `employees`");
+        stringBuilder.append("\nWHERE ");
+
+        for (int i = 0; i < empIDs.length; i++)
+        {
+            stringBuilder.append("empID = ");
+            stringBuilder.append(empIDs[i]);
+
+            if (i < empIDs.length - 1)
+            {
+                stringBuilder.append(" || ");
+            }
+        }
+
         stringBuilder.append(";");
 
         return stringBuilder.toString();
