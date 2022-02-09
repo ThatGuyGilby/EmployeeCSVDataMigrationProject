@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class EmployeeReader
 {
-    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+    private static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
     public EmployeeReader()

@@ -10,7 +10,7 @@ import java.util.Vector;
 
 public class DatabaseIO
 {
-    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+    private static Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
 
     private static List<Employee> employees;
 
@@ -241,5 +241,17 @@ public class DatabaseIO
         stringBuilder.append("DROP TABLE IF EXISTS `employees`;");
 
         return stringBuilder.toString();
+    }
+
+    public static void logExecutionTime(long startTime)
+    {
+        long endTime = System.nanoTime();
+        long executionNanoTime = endTime - startTime;
+        StringBuilder stringBuilder = new StringBuilder("Execution time: ");
+        stringBuilder.append(executionNanoTime);
+        stringBuilder.append("ns | ");
+        stringBuilder.append(Math.round(executionNanoTime * 0.000000001));
+        stringBuilder.append("s");
+        logger.info(stringBuilder.toString());
     }
 }

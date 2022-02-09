@@ -11,7 +11,10 @@ public class DatabaseIOExample
     public static void main(String[] args)
     {
         DatabaseIO.linkToSQLDatabase();
+
+        long startTime = System.nanoTime();
         DatabaseIO.persistEmployees();
+        DatabaseIO.logExecutionTime(startTime);
 
         Employee employee = DatabaseIO.getEmployee(14);
         System.out.println(employee);
