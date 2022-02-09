@@ -33,6 +33,11 @@ Relevant Classes
 - Create a data access object (DAO pattern) to persist the data to the database.
 - Persist employee records and write code to retrieve individual records from the database.
 
+Relevant Classes
+- [ConnectionFactory.java](../dev/src/main/java/com/teamsix/employees/model/ConnectionFactory.java)
+- [DatabaseIO.java](../dev/src/main/java/com/teamsix/employees/model/DatabaseIO.java)
+- [DatabaseIOExample.java](../dev/src/main/java/com/teamsix/employees/model/DatabaseIOExample.java)
+
 [⮬ Table of Contents](#table-of-contents)
 
 # Phase 3
