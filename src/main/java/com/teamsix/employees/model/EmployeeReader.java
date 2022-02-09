@@ -77,7 +77,7 @@ public class EmployeeReader
     public boolean employeeExists(Employee employee, List<Employee> employees)
     {
         for (Employee thisEmployee : employees) {
-            if (thisEmployee.empID == employee.empID) {
+            if (thisEmployee.getEmpID() == employee.getEmpID()) {
                 return true;
             }
         }

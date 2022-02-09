@@ -14,16 +14,42 @@ public class Employee
     // just add a getter and switch the usage in tese code
     private static Logger logger = LogManager.getLogger(Employee.class.getName());
 
-    public int empID;
-    public String namePrefix;
-    public String firstName;
-    public char middleInitial;
-    public String lastName;
-    public char gender;
-    public String email;
-    public java.sql.Date dateOfBirth;
-    public java.sql.Date dateOfJoining;
-    public float salary;
+    private int empID;
+    private String namePrefix;
+    private String firstName;
+    private char middleInitial;
+    private String lastName;
+    private char gender;
+    private String email;
+    private java.sql.Date dateOfBirth;
+    private java.sql.Date dateOfJoining;
+    private float salary;
+
+
+    public int getEmpID() {
+        return empID;
+    }
+
+    public String getNamePrefix() {
+        return namePrefix;
+    }
+
+    public char getMiddleInitial() {
+        return middleInitial;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
 
     public Employee(String[] data)
     {
