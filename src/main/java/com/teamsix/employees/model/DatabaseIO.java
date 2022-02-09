@@ -1,11 +1,21 @@
 package com.teamsix.employees.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class DatabaseIO
 {
+    public static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
+
     private static Connection connection;
     private static Statement statement;
     private static EmployeeReader reader;
@@ -17,13 +27,16 @@ public class DatabaseIO
         reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
         employees = reader.getValue();
 
-        try
+        try (InputStream inputStream = new FileInputStream("src/main/resources/mysql.properties"))
         {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/employee_schema", "root", "password");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+
+            connection = DriverManager.getConnection(properties.getProperty("dburl"), properties.getProperty("dbuserid"), properties.getProperty("dbpassword"));
 
             statement = connection.createStatement();
         }
-        catch (SQLException e)
+        catch (SQLException | IOException e)
         {
             e.printStackTrace();
         }
@@ -40,7 +53,7 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
     }
 
@@ -60,7 +73,7 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
 
         return null;
@@ -86,7 +99,7 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
 
         return null;
