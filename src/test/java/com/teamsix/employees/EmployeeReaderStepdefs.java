@@ -1,3 +1,5 @@
+package com.teamsix.employees;
+
 import com.teamsix.employees.model.Employee;
 import com.teamsix.employees.model.EmployeeReader;
 import io.cucumber.java.en.And;
@@ -8,7 +10,8 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
 
-public class EmployeeReaderStepdefs {
+public class EmployeeReaderStepdefs
+{
     EmployeeReader reader;
     List<Employee> employees;
 

@@ -1,11 +1,14 @@
 package com.teamsix.employees.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
-public class Employee implements Comparable<Employee>
+public class Employee
 {
+    // these variables need to be made private but they are used in tests,
+    // just add a getter and switch the usage in tese code
     public int empID;
     public String namePrefix;
     public String firstName;
@@ -13,8 +16,8 @@ public class Employee implements Comparable<Employee>
     public String lastName;
     public char gender;
     public String email;
-    public Date dateOfBirth;
-    public Date dateOfJoining;
+    public java.sql.Date dateOfBirth;
+    public java.sql.Date dateOfJoining;
     public float salary;
 
     public Employee(String[] data)
@@ -29,7 +32,11 @@ public class Employee implements Comparable<Employee>
 
         try
         {
-            this.dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").parse(data[7]);
+            String strDate = data[7];
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            java.util.Date utilDate = sdf.parse(strDate);
+            this.dateOfBirth = new java.sql.Date(utilDate.getTime());
         }
         catch (ParseException e)
         {
@@ -38,7 +45,11 @@ public class Employee implements Comparable<Employee>
 
         try
         {
-            this.dateOfJoining = new SimpleDateFormat("dd/MM/yyyy").parse(data[8]);
+            String strDate = data[8];
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            java.util.Date utilDate = sdf.parse(strDate);
+            this.dateOfJoining = new java.sql.Date(utilDate.getTime());
         }
         catch (ParseException e)
         {
@@ -48,44 +59,52 @@ public class Employee implements Comparable<Employee>
         this.salary = Integer.parseInt(data[9]);
     }
 
-    @Override
-    public String toString()
+    public Employee(ResultSet resultSet)
     {
-        StringBuilder stringBuilder = new StringBuilder("ID: ");
-        stringBuilder.append(String.valueOf(empID));
-        stringBuilder.append(" | ");
-        stringBuilder.append(namePrefix);
-        stringBuilder.append(" ");
-        stringBuilder.append(firstName);
-        stringBuilder.append(" ");
-        stringBuilder.append(middleInitial);
-        stringBuilder.append(" ");
-        stringBuilder.append(lastName);
-        stringBuilder.append(" | ");
-        stringBuilder.append(email);
-        stringBuilder.append(" | ");
-        stringBuilder.append(dateOfBirth);
-        stringBuilder.append(" | ");
-        stringBuilder.append(dateOfJoining);
-        stringBuilder.append(" | $");
-        stringBuilder.append(salary);
-
-        return stringBuilder.toString();
+        try
+        {
+            this.empID = resultSet.getInt("empID");
+            this.namePrefix = resultSet.getString("namePrefix");
+            this.firstName = resultSet.getString("firstName");
+            this.middleInitial = resultSet.getString("middleInitial").charAt(0);
+            this.lastName = resultSet.getString("lastName");
+            this.gender = resultSet.getString("gender").charAt(0);
+            this.email = resultSet.getString("email");
+            this.dateOfBirth = resultSet.getDate("dateOfBirth");
+            this.dateOfJoining = resultSet.getDate("dateOfJoining");
+            this.salary = resultSet.getFloat("salary");
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public int compareTo(Employee o)
+    public String toString()
     {
-        if (o.empID > empID)
-        {
-            return -1;
-        }
+        StringBuilder stringBuilder = new StringBuilder("\"");
+        stringBuilder.append(String.valueOf(empID));
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(namePrefix);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(firstName);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(middleInitial);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(lastName);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(gender);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(email);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(dateOfBirth);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(dateOfJoining);
+        stringBuilder.append("\" , \"");
+        stringBuilder.append(salary);
+        stringBuilder.append("\"");
 
-        if (o.empID < empID)
-        {
-            return 1;
-        }
-
-        return 0;
+        return stringBuilder.toString();
     }
 }
