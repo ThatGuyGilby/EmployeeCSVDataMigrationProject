@@ -47,4 +47,6 @@ public class ConnectionFactory
             logger.error(e.toString());
         }
     }
+
+    private ConnectionFactory(){}
 }
