@@ -27,18 +27,14 @@ public class DatabaseIO
         reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
         employees = reader.getValue();
 
-        try (InputStream inputStream = new FileInputStream("src/main/resources/mysql.properties"))
+        try
         {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-            connection = DriverManager.getConnection(properties.getProperty("dburl"), properties.getProperty("dbuserid"), properties.getProperty("dbpassword"));
-
+            connection = ConnectionFactory.getConnection();
             statement = connection.createStatement();
         }
-        catch (SQLException | IOException e)
+        catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(e.toString());
         }
     }
 
