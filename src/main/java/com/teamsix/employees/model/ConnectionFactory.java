@@ -35,4 +35,16 @@ public class ConnectionFactory
 
         return connection;
     }
+
+    public static void closeConnection()
+    {
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException e)
+        {
+            logger.error(e.toString());
+        }
+    }
 }
