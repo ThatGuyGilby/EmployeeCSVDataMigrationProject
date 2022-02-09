@@ -17,7 +17,7 @@ public class EmployeeTest
         employees = reader.getValue();
         for(Employee employee : employees)
         {
-            if(!employee.email.matches("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"))
+            if(!employee.getEmail().matches("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"))
             {
                 Assertions.fail();
             }
@@ -31,7 +31,7 @@ public class EmployeeTest
         employees = reader.getValue();
         for (Employee employee : employees)
         {
-            if(!employee.namePrefix.matches("^([a-zA-Z]+(.)?[\\s]*)$"))
+            if(!employee.getNamePrefix().matches("^([a-zA-Z]+(.)?[\\s]*)$"))
             {
                 Assertions.fail();
             }
@@ -45,7 +45,7 @@ public class EmployeeTest
         employees = reader.getValue();
         for(Employee employee : employees)
         {
-            if(Character.isLowerCase(employee.middleInitial))
+            if(Character.isLowerCase(employee.getMiddleInitial()))
             {
                 Assertions.fail();
             }
