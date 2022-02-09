@@ -20,6 +20,10 @@
 - Provide a simple user interface to display the results of reading the file – how many unique, clean records there are, how many duplicates, how many records with missing fields, possibly display the questionable records.
 - User the provided EmployeeRecords.csv for your testing and optionally create your own test files to help with your JUnit tests.
 
+Relevant Classes
+- [Employee.java](../dev/src/main/java/com/teamsix/employees/model/Employee.java)
+- [EmployeeReader.java](../dev/src/main/java/com/teamsix/employees/model/EmployeeReader.java)
+
 [⮬ Table of Contents](#table-of-contents)
 
 # Phase 2
