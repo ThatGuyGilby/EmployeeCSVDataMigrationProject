@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,11 +16,11 @@ public class DatabaseIO
 
     public static void linkToSQLDatabase()
     {
-        ReadEmployeesFromFile();
+        readEmployeesFromFile();
 
         try
         {
-            Connection connection = ConnectionFactory.getConnection();
+            Connection connection = ConnectionFactory.getConnectionFromPool();
             Statement statement = connection.createStatement();
         }
         catch (SQLException e)
@@ -30,24 +29,29 @@ public class DatabaseIO
         }
     }
 
-    private static void ReadEmployeesFromFile()
+    private static void readEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
         reader.setPathToReadCSVFrom("src/main/resources/employeesbig.csv");
         employees = reader.getValue();
     }
 
-    public static void writeEmployeeEntries()
+    public static void writeEmployeeEntries(int threadsToUse)
     {
         try
         {
-            Connection connection = ConnectionFactory.getConnection();
+            ConnectionFactory.setPooledConnections(threadsToUse + 1);
+
+            Connection connection = ConnectionFactory.getConnectionFromPool();
             Statement statement = connection.createStatement();
 
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            generateDatabaseEntries(4, employees);
+            ConnectionFactory.returnConnectionToPool(connection);
+            connection = null;
+
+            generateDatabaseEntries(threadsToUse, employees);
         }
         catch (SQLException e)
         {
@@ -57,24 +61,27 @@ public class DatabaseIO
 
     public static void generateDatabaseEntries(int numberOfThreads, List<Employee> employeeList)
     {
-        ArrayList<List<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
+        Vector<Vector<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
 
         DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
         {
-            DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), employeesToPersist.get(i));
+            Vector<Employee> current = new Vector<>(employeesToPersist.get(i));
+
+            DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), current);
             entries[i] = entry;
         }
 
         for (DatabaseEntry entry : entries)
         {
-            entry.start();
+            Thread thread = new Thread(entry);
+            thread.start();
         }
     }
 
-    public static ArrayList<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    public static Vector<Vector<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
     {
-        ArrayList<List<Employee>> subSets = new ArrayList<>();
+        Vector<Vector<Employee>> subSets = new Vector<>();
         int chunkSize = list.size() / chunks;
 
         for (int i = 0; i < chunks; i++)
@@ -84,7 +91,7 @@ public class DatabaseIO
                 int chunkFloor = 0;
                 int chunkCeil = chunkSize;
 
-                subSets.add(list.subList(chunkFloor, chunkCeil));
+                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkCeil);
             }
             else if (i < chunks - 1)
@@ -92,7 +99,7 @@ public class DatabaseIO
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = (chunkSize * (i + 1));
 
-                subSets.add(list.subList(chunkFloor, chunkCeil));
+                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
             }
             else
@@ -100,20 +107,20 @@ public class DatabaseIO
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = list.size();
 
-                subSets.add(list.subList(chunkFloor , chunkCeil));;
+                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
                 System.out.println("");
             }
         }
 
-        return subSets;
+        return new Vector<>(subSets);
     }
 
     public static Employee getEmployee(int empID)
     {
         try
         {
-            Connection connection = ConnectionFactory.getConnection();
+            Connection connection = ConnectionFactory.getConnectionFromPool();
             Statement statement = connection.createStatement();
 
             List<Employee> employeeList = new ArrayList<>();

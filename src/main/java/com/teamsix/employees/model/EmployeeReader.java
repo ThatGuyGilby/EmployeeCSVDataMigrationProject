@@ -69,6 +69,7 @@ public class EmployeeReader
             readerResults.append(duplicates.size());
             readerResults.append("\nNumber of records with empty fields: ");
             readerResults.append(emptyFields.size());
+            readerResults.append("\n");
             logger.info(readerResults.toString());
 
             return employees;
