@@ -35,6 +35,6 @@ public class DatabaseIOExample
 
         double endTime = System.nanoTime();
         System.out.println("This operation took " + ((endTime-startTime)/1000000000) + " seconds");
-        ConnectionFactory.closeConnection();
+        //ConnectionFactory.closeConnection();
     }
 }

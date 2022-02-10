@@ -89,12 +89,12 @@ public class DatabaseIO
             }
             else if (i < chunks - 1)
             {
-                subSets.add(list.subList((chunkSize * i), (chunkSize * (i + 1))));;
+                subSets.add(list.subList((chunkSize * i) + 1, (chunkSize * (i + 1))));;
                 System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + (chunkSize * (i + 1)));
             }
             else
             {
-                subSets.add(list.subList((chunkSize * i), list.size()));;
+                subSets.add(list.subList((chunkSize * i) + 1, list.size()));;
                 System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + list.size());
                 System.out.println("");
             }
