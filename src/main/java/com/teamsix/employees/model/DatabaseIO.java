@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,28 +47,7 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?)");
-
-            Vector<List<Employee>> employee = splitListIntoChunks(8, employees);
-
-            DatabaseEntry databaseEntry1 = new DatabaseEntry("1", preparedStatement, employee.get(0));
-            DatabaseEntry databaseEntry2 = new DatabaseEntry("2", preparedStatement, employee.get(1));
-            DatabaseEntry databaseEntry3 = new DatabaseEntry("3", preparedStatement, employee.get(2));
-            DatabaseEntry databaseEntry4 = new DatabaseEntry("4", preparedStatement, employee.get(3));
-            DatabaseEntry databaseEntry5 = new DatabaseEntry("5", preparedStatement, employee.get(4));
-            DatabaseEntry databaseEntry6 = new DatabaseEntry("6", preparedStatement, employee.get(5));
-            DatabaseEntry databaseEntry7 = new DatabaseEntry("7", preparedStatement, employee.get(6));
-            DatabaseEntry databaseEntry8 = new DatabaseEntry("8", preparedStatement, employee.get(7));
-            databaseEntry1.databaseInformationEntry();
-            databaseEntry2.databaseInformationEntry();
-            databaseEntry3.databaseInformationEntry();
-            databaseEntry4.databaseInformationEntry();
-            databaseEntry5.databaseInformationEntry();
-            databaseEntry6.databaseInformationEntry();
-            databaseEntry7.databaseInformationEntry();
-            databaseEntry8.databaseInformationEntry();
+            generateDatabaseEntries(4, employees);
         }
         catch (SQLException e)
         {
@@ -75,27 +55,53 @@ public class DatabaseIO
         }
     }
 
-    public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    public static void generateDatabaseEntries(int numberOfThreads, List<Employee> employeeList)
     {
-        Vector<List<Employee>> subSets = new Vector<>();
+        ArrayList<List<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
+
+        DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
+        for (int i = 0; i < numberOfThreads; i++)
+        {
+            DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), employeesToPersist.get(i));
+            entries[i] = entry;
+        }
+
+        for (DatabaseEntry entry : entries)
+        {
+            entry.start();
+        }
+    }
+
+    public static ArrayList<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    {
+        ArrayList<List<Employee>> subSets = new ArrayList<>();
         int chunkSize = list.size() / chunks;
 
         for (int i = 0; i < chunks; i++)
         {
             if (i == 0)
             {
-                subSets.add(list.subList(0, chunkSize));
-                System.out.println("Chunk " + i + " from 0 - " + chunkSize);
+                int chunkFloor = 0;
+                int chunkCeil = chunkSize;
+
+                subSets.add(list.subList(chunkFloor, chunkCeil));
+                System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkCeil);
             }
             else if (i < chunks - 1)
             {
-                subSets.add(list.subList((chunkSize * i) + 1, (chunkSize * (i + 1))));;
-                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + (chunkSize * (i + 1)));
+                int chunkFloor = (chunkSize * i);
+                int chunkCeil = (chunkSize * (i + 1));
+
+                subSets.add(list.subList(chunkFloor, chunkCeil));
+                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
             }
             else
             {
-                subSets.add(list.subList((chunkSize * i) + 1, list.size()));;
-                System.out.println("Chunk " + i + " from "+ ((chunkSize * i) + 1) + " - " + list.size());
+                int chunkFloor = (chunkSize * i);
+                int chunkCeil = list.size();
+
+                subSets.add(list.subList(chunkFloor , chunkCeil));;
+                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
                 System.out.println("");
             }
         }
