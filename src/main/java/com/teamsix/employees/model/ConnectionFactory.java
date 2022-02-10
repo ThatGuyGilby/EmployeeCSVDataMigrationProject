@@ -25,10 +25,7 @@ public class ConnectionFactory
                 Properties properties = new Properties();
                 properties.load(inputStream);
 
-                connection = DriverManager.getConnection(
-                        properties.getProperty("dburl"),
-                        properties.getProperty("dbuserid"),
-                        properties.getProperty("dbpassword"));
+                connection = DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
             }
             catch (SQLException | IOException e)
             {
@@ -41,14 +38,15 @@ public class ConnectionFactory
 
     public static void closeConnection()
     {
-        if(connection != null) {                                    //check if the connection is not null;
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                logger.error(e.toString());
-            }
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException e)
+        {
+            logger.error(e.toString());
         }
     }
 
-    private ConnectionFactory(){};                                  //prevent to make other instance
+    private ConnectionFactory(){}
 }

@@ -78,13 +78,25 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            System.out.println("");
-            Vector<List<Employee>> subSets = splitListIntoChunks(8, employees);
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
+                            "VALUES (?,?,?,?,?,?,?,?,?,?)");
 
-            for (int i = 0; i < subSets.size(); i++)
-            {
-                statement.executeUpdate(buildInsertStatement(subSets.get(i)));
+            for (Employee e : employees){
+                preparedStatement.setInt(1, e.getEmpID());
+                preparedStatement.setString(2, e.getNamePrefix());
+                preparedStatement.setString(3, e.getFirstName());
+                preparedStatement.setString(4, String.valueOf(e.getMiddleInitial()));
+                preparedStatement.setString(5, e.getLastName());
+                preparedStatement.setString(6, String.valueOf(e.getGender()));
+                preparedStatement.setString(7, e.getEmail());
+                preparedStatement.setDate(8, e.getDateOfBirth());
+                preparedStatement.setDate(9, e.getDateOfJoining());
+                preparedStatement.setFloat(10, e.getSalary());
+
+                preparedStatement.executeUpdate();
             }
+
         }
         catch (SQLException e)
         {
@@ -145,39 +157,6 @@ public class DatabaseIO
             resultSet.close();
 
             return employeeToReturn;
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
-
-        return null;
-    }
-
-    public static List<Employee> getEmployees(int[] empIDs)
-    {
-        try
-        {
-            Connection connection = ConnectionFactory.getConnection();
-            connection.setAutoCommit(false); // hacky efficiency code
-            Statement statement = connection.createStatement();
-
-            List<Employee> employeeList = new ArrayList<>();
-            String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
-
-            System.out.println(builtSQlRequest);
-
-            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
-
-            while (resultSet.next())
-            {
-                employeeList.add(new Employee(resultSet));
-            }
-
-            resultSet.close();
-            connection.setAutoCommit(true); // hacky efficiency code
-
-            return employeeList;
         }
         catch (SQLException e)
         {

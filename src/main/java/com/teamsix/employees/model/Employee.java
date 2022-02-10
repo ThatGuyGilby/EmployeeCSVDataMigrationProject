@@ -3,6 +3,7 @@ package com.teamsix.employees.model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -25,6 +26,21 @@ public class Employee
     private java.sql.Date dateOfJoining;
     private float salary;
 
+    public char getGender() {
+        return gender;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public Date getDateOfJoining() {
+        return dateOfJoining;
+    }
+
+    public float getSalary() {
+        return salary;
+    }
 
     public int getEmpID() {
         return empID;
@@ -115,7 +131,7 @@ public class Employee
     public String toString()
     {
         StringBuilder stringBuilder = new StringBuilder("\"");
-        stringBuilder.append(String.valueOf(empID));
+        stringBuilder.append(empID);
         stringBuilder.append("\" , \"");
         stringBuilder.append(namePrefix);
         stringBuilder.append("\" , \"");
