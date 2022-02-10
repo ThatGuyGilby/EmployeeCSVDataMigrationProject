@@ -10,6 +10,15 @@ import java.util.Objects;
 
 public class EmployeeReader
 {
+    private List<Employee> duplicates;
+    private List<Employee> emptyFields;
+    public List<Employee> getDuplicates() {
+        return duplicates;
+    }
+    public List<Employee> getEmptyFields() {
+        return emptyFields;
+    }
+
     private static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
@@ -27,8 +36,8 @@ public class EmployeeReader
     {
         String line = "";
         List<Employee> employees = new ArrayList<>();
-        List<Employee> duplicates = new ArrayList<>();
-        List<Employee> emptyFields = new ArrayList<>();
+        duplicates = new ArrayList<>();
+        emptyFields = new ArrayList<>();
 
         try
         {
