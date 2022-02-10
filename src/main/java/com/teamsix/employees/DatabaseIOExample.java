@@ -5,6 +5,7 @@ import com.teamsix.employees.model.DatabaseIO;
 import com.teamsix.employees.model.Employee;
 
 import java.util.List;
+import java.util.Vector;
 
 public class DatabaseIOExample
 {
@@ -13,6 +14,8 @@ public class DatabaseIOExample
         double startTime = System.nanoTime();
         DatabaseIO.linkToSQLDatabase();
         DatabaseIO.writeEmployeeEntries();
+
+
 
 //        Employee employee = DatabaseIO.getEmployee(877054);
 //        System.out.println(employee);
@@ -25,6 +28,10 @@ public class DatabaseIOExample
 //            Employee employeeToOutput = employees.get(i);
 //            System.out.println(employeeToOutput.toString());
 //        }
+
+        int i = Runtime.getRuntime().availableProcessors();
+
+        System.out.println(i);
 
         double endTime = System.nanoTime();
         System.out.println("This operation took " + ((endTime-startTime)/1000000000) + " seconds");
