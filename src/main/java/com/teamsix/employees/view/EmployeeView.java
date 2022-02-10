@@ -41,4 +41,18 @@ public class EmployeeView
             System.out.println("");
         }
     }
+
+    public int getUserThreadCount(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please specify a number of Threads that you wish to use..");
+        System.out.println("---> ");
+
+        int i = 0;
+
+        if (scanner.hasNext()){
+            i = scanner.nextInt();
+        }
+
+        return i;
+    }
 }

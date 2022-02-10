@@ -13,7 +13,7 @@ public class DatabaseIOExample
     {
         double startTime = System.nanoTime();
         DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+
 
 
 

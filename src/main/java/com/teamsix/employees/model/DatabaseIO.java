@@ -37,7 +37,7 @@ public class DatabaseIO
         employees = reader.getValue();
     }
 
-    public static void writeEmployeeEntries()
+    public static void writeEmployeeEntries(int threads)
     {
         try
         {
@@ -47,7 +47,7 @@ public class DatabaseIO
             statement.executeUpdate(buildDropStatement());
             statement.executeUpdate(buildCreateStatement());
 
-            generateDatabaseEntries(4, employees);
+            generateDatabaseEntries(2, employees);
         }
         catch (SQLException e)
         {
