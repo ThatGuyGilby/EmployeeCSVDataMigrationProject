@@ -25,7 +25,7 @@ public class ConnectionFactory
                 Properties properties = new Properties();
                 properties.load(inputStream);
 
-                connection = DriverManager.getConnection(properties.getProperty("dburl"), properties.getProperty("dbuserid"), properties.getProperty("dbpassword"));
+                connection = DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
             }
             catch (SQLException | IOException e)
             {
