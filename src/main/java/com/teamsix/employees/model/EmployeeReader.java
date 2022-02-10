@@ -39,9 +39,8 @@ public class EmployeeReader
         duplicates = new ArrayList<>();
         emptyFields = new ArrayList<>();
 
-        try
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToReadCSVFrom)))
         {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToReadCSVFrom));
             bufferedReader.readLine(); // Get rid of the header line
 
             while((line = bufferedReader.readLine()) != null)

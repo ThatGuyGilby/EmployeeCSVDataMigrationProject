@@ -66,7 +66,6 @@ public class Employee
         return lastName;
     }
 
-
     public Employee(String[] data)
     {
         this.empID = Integer.parseInt(data[0]);

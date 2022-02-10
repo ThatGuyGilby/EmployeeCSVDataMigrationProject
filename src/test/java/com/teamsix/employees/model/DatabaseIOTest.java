@@ -40,8 +40,7 @@ public class DatabaseIOTest {
     @DisplayName("Row count")
     @Test
     public void rowCount() throws SQLException {
-        databaseIO.linkToSQLDatabase();
-        databaseIO.writeEmployeeEntries();
+        databaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees;");
         int rowCount = 0;
@@ -56,8 +55,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of ids")
     @Test
     public void anyNullValuesOfIds() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -71,8 +69,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of name prefix")
     @Test
     public void anyNullValuesOfNamePrefix() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()) {
@@ -86,8 +83,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of first name")
     @Test
     public void anyNullValuesOfFirstName() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -101,8 +97,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of last name")
     @Test
     public void anyNullValuesOfLastName() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -116,8 +111,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of gender")
     @Test
     public void anyNullValuesOfGender() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -131,8 +125,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of email")
     @Test
     public void anyNullValuesOfEmail() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -146,8 +139,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of date of birth")
     @Test
     public void anyNullValuesOfDateOfBirth() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -161,8 +153,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of dateOfJoining")
     @Test
     public void anyNullValuesOfDateOfJoining() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){
@@ -176,8 +167,7 @@ public class DatabaseIOTest {
     @DisplayName("Any null values of salary")
     @Test
     public void anyNullValuesOfSalary() throws SQLException {
-        DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
+        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         while(resultSet.next()){

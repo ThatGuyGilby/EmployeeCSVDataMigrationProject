@@ -9,8 +9,8 @@ import java.util.Vector;
 public class DatabaseEntry implements Runnable
 {
     private Connection connection;
-    private String name;
-    private List<Employee> list;
+    private final String name;
+    private final List<Employee> list;
     private PreparedStatement preparedStatement;
 
     public DatabaseEntry(String name, Vector<Employee> list){
@@ -35,7 +35,7 @@ public class DatabaseEntry implements Runnable
         double timeBefore = System.nanoTime();
         try
         {
-            for (int i = 0; i < list.size(); i++)
+            for (int i = 0, listSize = list.size(); i < listSize; i++)
             {
                 Employee e = list.get(i);
                 preparedStatement.setInt(1, e.getEmpID());
@@ -53,6 +53,10 @@ public class DatabaseEntry implements Runnable
             }
 
             preparedStatement.executeBatch();
+
+            connection.commit();
+            ConnectionFactory.returnConnectionToPool(connection);
+            connection = null;
         }
         catch (SQLException e)
         {

@@ -10,26 +10,15 @@ import java.util.Vector;
 
 public class DatabaseIO
 {
-    private static Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
+    private static final Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
 
     private static List<Employee> employees;
 
-    public static void linkToSQLDatabase()
-    {
-        readEmployeesFromFile();
+    private static PreparedStatement createTableStatement;
+    private static PreparedStatement dropTableStatement;
+    private static PreparedStatement selectSpecificEmployeeStatement;
 
-        try
-        {
-            Connection connection = ConnectionFactory.getConnectionFromPool();
-            Statement statement = connection.createStatement();
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
-    }
-
-    private static void readEmployeesFromFile()
+    public static void readEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
         reader.setPathToReadCSVFrom("src/main/resources/employeesbig.csv");
@@ -38,25 +27,12 @@ public class DatabaseIO
 
     public static void writeEmployeeEntries(int threadsToUse)
     {
-        try
-        {
-            ConnectionFactory.setPooledConnections(threadsToUse + 1);
+        ConnectionFactory.setPooledConnections(threadsToUse);
 
-            Connection connection = ConnectionFactory.getConnectionFromPool();
-            Statement statement = connection.createStatement();
+        dropTable();
+        createTable();
 
-            statement.executeUpdate(buildDropStatement());
-            statement.executeUpdate(buildCreateStatement());
-
-            ConnectionFactory.returnConnectionToPool(connection);
-            connection = null;
-
-            generateDatabaseEntries(threadsToUse, employees);
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
+        generateDatabaseEntries(threadsToUse, employees);
     }
 
     public static void generateDatabaseEntries(int numberOfThreads, List<Employee> employeeList)
@@ -72,8 +48,9 @@ public class DatabaseIO
             entries[i] = entry;
         }
 
-        for (DatabaseEntry entry : entries)
+        for (int i = 0; i < entries.length; i++)
         {
+            DatabaseEntry entry = entries[i];
             Thread thread = new Thread(entry);
             thread.start();
         }
@@ -89,10 +66,9 @@ public class DatabaseIO
             if (i == 0)
             {
                 int chunkFloor = 0;
-                int chunkCeil = chunkSize;
 
-                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
-                System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkCeil);
+                subSets.add(new Vector<>(list.subList(chunkFloor, chunkSize)));
+                System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkSize);
             }
             else if (i < chunks - 1)
             {
@@ -109,7 +85,7 @@ public class DatabaseIO
 
                 subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
-                System.out.println("");
+                System.out.println();
             }
         }
 
@@ -118,118 +94,103 @@ public class DatabaseIO
 
     public static Employee getEmployee(int empID)
     {
+        Connection connection = ConnectionFactory.getConnectionFromPool();
+
+        if (selectSpecificEmployeeStatement == null)
+        {
+            try
+            {
+                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM `employees`\nWHERE empID = ?;");
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
         try
         {
-            Connection connection = ConnectionFactory.getConnectionFromPool();
-            Statement statement = connection.createStatement();
-
-            List<Employee> employeeList = new ArrayList<>();
-            String builtSQlRequest = buildSelectSpecificEmployee(empID);
-
-            System.out.println(builtSQlRequest);
-
-            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
-            resultSet.next();
-            Employee employeeToReturn = new Employee(resultSet);
-
-            resultSet.close();
-
-            return employeeToReturn;
+            return new Employee(selectSpecificEmployeeStatement.executeQuery());
         }
         catch (SQLException e)
         {
-            logger.error(e.toString());
+            e.printStackTrace();
         }
+
+        ConnectionFactory.returnConnectionToPool(connection);
+        connection = null;
 
         return null;
     }
 
-    public static String buildInsertStatement(Employee employee)
+    public static void createTable()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
-        stringBuilder.append("VALUES\n");
+        Connection connection = ConnectionFactory.getConnectionFromPool();
 
-        stringBuilder.append("(");
-        stringBuilder.append(employee.toString());
-        stringBuilder.append(")");
-
-        return stringBuilder.toString();
-    }
-
-    public static String buildInsertStatement(List<Employee> employeesToPersist)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
-        stringBuilder.append("VALUES\n");
-
-        for (int i = 0; i < employeesToPersist.size(); i++)
+        if (createTableStatement == null)
         {
-            Employee employeeToPersist = employeesToPersist.get(i);
-
-            if (i > 0)
+            try
             {
-                stringBuilder.append((",\n"));
-            }
+                StringBuilder stringBuilder = new StringBuilder("CREATE TABLE `employees` (\n  `empID` int NOT NULL,\n");
+                stringBuilder.append("  `namePrefix` varchar(5) DEFAULT NULL,\n");
+                stringBuilder.append("  `firstName` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `middleInitial` char(1) DEFAULT NULL,\n");
+                stringBuilder.append("  `lastName` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `gender` char(1) DEFAULT NULL,\n");
+                stringBuilder.append("  `email` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `dateOfBirth` date DEFAULT NULL,\n");
+                stringBuilder.append("  `dateOfJoining` date DEFAULT NULL,\n");
+                stringBuilder.append("  `salary` decimal(10,0) DEFAULT NULL,\n");
+                stringBuilder.append("  PRIMARY KEY (`empID`)\n");
+                stringBuilder.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n");
 
-            stringBuilder.append("(");
-            stringBuilder.append(employeeToPersist.toString());
-            stringBuilder.append(")");
+                createTableStatement = connection.prepareStatement(stringBuilder.toString());
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
 
-        return stringBuilder.toString();
+        try
+        {
+            createTableStatement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        ConnectionFactory.returnConnectionToPool(connection);
+        connection = null;
     }
 
-    public static String buildSelectSpecificEmployee(int empID)
+    public static void dropTable()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SELECT * FROM `employees`");
-        stringBuilder.append("\nWHERE empID = ");
-        stringBuilder.append(empID);
-        stringBuilder.append(";");
+        Connection connection = ConnectionFactory.getConnectionFromPool();
 
-        return stringBuilder.toString();
-    }
+        if (dropTableStatement == null)
+        {
+            try
+            {
+                dropTableStatement = connection.prepareStatement("DROP TABLE IF EXISTS `employees`;");
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
 
-    public static String buildCreateStatement()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(
-                "CREATE TABLE `employees` (\n" +
-                        "  `empID` int NOT NULL,\n" +
-                        "  `namePrefix` varchar(5) DEFAULT NULL,\n" +
-                        "  `firstName` varchar(45) DEFAULT NULL,\n" +
-                        "  `middleInitial` char(1) DEFAULT NULL,\n" +
-                        "  `lastName` varchar(45) DEFAULT NULL,\n" +
-                        "  `gender` char(1) DEFAULT NULL,\n" +
-                        "  `email` varchar(45) DEFAULT NULL,\n" +
-                        "  `dateOfBirth` date DEFAULT NULL,\n" +
-                        "  `dateOfJoining` date DEFAULT NULL,\n" +
-                        "  `salary` decimal(10,0) DEFAULT NULL,\n" +
-                        "  PRIMARY KEY (`empID`)\n" +
-                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n"
-        );
+        try
+        {
+            dropTableStatement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-        return  stringBuilder.toString();
-    }
-
-    public static String buildDropStatement()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("DROP TABLE IF EXISTS `employees`;");
-
-        return stringBuilder.toString();
-    }
-
-    public static void logExecutionTime(long startTime)
-    {
-        long endTime = System.nanoTime();
-        long executionNanoTime = endTime - startTime;
-        StringBuilder stringBuilder = new StringBuilder("Execution time: ");
-        stringBuilder.append(executionNanoTime);
-        stringBuilder.append("ns | ");
-        stringBuilder.append(executionNanoTime * 0.000000001);
-        stringBuilder.append("s");
-        logger.info(stringBuilder.toString());
+        ConnectionFactory.returnConnectionToPool(connection);
+        connection = null;
     }
 }

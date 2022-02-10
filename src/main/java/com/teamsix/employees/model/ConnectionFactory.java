@@ -12,11 +12,11 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Queue;
+import java.util.Vector;
 
 public class ConnectionFactory
 {
-    private static Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
-    private static int defaultPooledConnections = 25;
+    private static final Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
     private static Queue<Connection> connections = new LinkedList<>();
 
     private static Connection getConnection()
@@ -26,8 +26,7 @@ public class ConnectionFactory
             Properties properties = new Properties();
             properties.load(inputStream);
 
-            Connection connection = DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
-            return connection;
+            return DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
         }
         catch (SQLException | IOException e)
         {
@@ -49,17 +48,23 @@ public class ConnectionFactory
 
     public static Connection getConnectionFromPool()
     {
-        if (connections.size() <= 0)
+        if (connections.size() == 0)
         {
-            setPooledConnections(defaultPooledConnections);
+            int fallbackPoolSize = 25;
+            setPooledConnections(fallbackPoolSize);
         }
 
-        return connections.remove();
-    }
+        Connection connection = connections.remove();
+        try
+        {
+            connection.setAutoCommit(false);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-    public static void returnConnectionToPool(Connection connection)
-    {
-        connections.add(connection);
+        return connection;
     }
 
     public static void closeConnections()
@@ -75,6 +80,11 @@ public class ConnectionFactory
         {
             logger.error(e.toString());
         }
+    }
+
+    public static void returnConnectionToPool(Connection connection)
+    {
+        connections.add(connection);
     }
 
     private ConnectionFactory(){}
