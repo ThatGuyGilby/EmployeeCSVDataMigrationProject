@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+
 public class DatabaseIO
 {
     private static Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
@@ -32,12 +33,43 @@ public class DatabaseIO
     private static void ReadEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
-        reader.setPathToReadCSVFrom("src/main/resources/employees.csv");
+        reader.setPathToReadCSVFrom("src/main/resources/employeeRecordsLarge.csv");
         employees = reader.getValue();
     }
 
+
     public static void writeEmployeeEntries()
-    {
+    {   long writeStartTime = System.nanoTime();
+        PreparedStatement preparedStatement = null;
+        try
+        {
+            Connection connection = ConnectionFactory.getConnection();
+            Statement statement = connection.createStatement();
+            preparedStatement = connection.prepareStatement("INSERT INTO employees (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary) VALUES (?,?,?,?,?,?,?,?,?,?)");
+
+            statement.executeUpdate(buildDropStatement());
+            statement.executeUpdate(buildCreateStatement());
+
+            System.out.println("");
+            Vector<List<Employee>> subSets = splitListIntoChunks(8, employees);
+
+            for (int i = 0; i < subSets.size(); i++)
+            {
+                preparedStatement.executeUpdate(buildInsertStatement(subSets.get(i)));
+            }
+        }
+        catch (SQLException e)
+        {
+            logger.error(e.toString());
+        }
+        long writeEndTime = System.nanoTime();
+        long writeDuration = writeEndTime - writeStartTime;
+        System.out.println("Bubble sort execution time: " + writeDuration);
+    }
+
+/*
+    public static void writeEmployeeEntries()
+    {long writeStartTime = System.nanoTime();
         try
         {
             Connection connection = ConnectionFactory.getConnection();
@@ -58,7 +90,13 @@ public class DatabaseIO
         {
             logger.error(e.toString());
         }
+        long writeEndTime = System.nanoTime();
+        long writeDuration = writeEndTime - writeStartTime;
+        System.out.println("Bubble sort execution time: " + writeDuration);
     }
+
+ */
+
 
     public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
     {
