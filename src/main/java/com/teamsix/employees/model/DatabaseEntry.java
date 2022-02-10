@@ -1,17 +1,28 @@
 package com.teamsix.employees.model;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DatabaseEntry extends Thread{
+public class DatabaseEntry extends Thread
+{
+    private Connection connection;
     private String name;
     private List<Employee> list;
     private PreparedStatement preparedStatement;
 
-    public DatabaseEntry(String name, PreparedStatement preparedStatement, List<Employee> list){
+    public DatabaseEntry(String name, List<Employee> list){
         this.name = name;
-        this.preparedStatement = preparedStatement;
+        this.connection = ConnectionFactory.getConnection();
+        try {
+            this.preparedStatement = connection.prepareStatement(
+                    "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
+                            "VALUES (?,?,?,?,?,?,?,?,?,?)");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ;
         this.list = list;
     }
 
