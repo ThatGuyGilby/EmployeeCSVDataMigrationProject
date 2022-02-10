@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-
 public class DatabaseIO
 {
     private static Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
@@ -33,7 +32,7 @@ public class DatabaseIO
     private static void ReadEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
-        reader.setPathToReadCSVFrom("src/main/resources/employeeRecordsLarge.csv");
+        reader.setPathToReadCSVFrom("src/main/resources/employeesbig.csv");
         employees = reader.getValue();
     }
 
@@ -51,29 +50,30 @@ public class DatabaseIO
                     "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
                             "VALUES (?,?,?,?,?,?,?,?,?,?)");
 
-            for (Employee e : employees){
-                preparedStatement.setInt(1, e.getEmpID());
-                preparedStatement.setString(2, e.getNamePrefix());
-                preparedStatement.setString(3, e.getFirstName());
-                preparedStatement.setString(4, String.valueOf(e.getMiddleInitial()));
-                preparedStatement.setString(5, e.getLastName());
-                preparedStatement.setString(6, String.valueOf(e.getGender()));
-                preparedStatement.setString(7, e.getEmail());
-                preparedStatement.setDate(8, e.getDateOfBirth());
-                preparedStatement.setDate(9, e.getDateOfJoining());
-                preparedStatement.setFloat(10, e.getSalary());
+            Vector<List<Employee>> employee = splitListIntoChunks(8, employees);
 
-                preparedStatement.executeUpdate();
-            }
-
+            DatabaseEntry databaseEntry1 = new DatabaseEntry("1", preparedStatement, employee.get(0));
+            DatabaseEntry databaseEntry2 = new DatabaseEntry("2", preparedStatement, employee.get(1));
+            DatabaseEntry databaseEntry3 = new DatabaseEntry("3", preparedStatement, employee.get(2));
+            DatabaseEntry databaseEntry4 = new DatabaseEntry("4", preparedStatement, employee.get(3));
+            DatabaseEntry databaseEntry5 = new DatabaseEntry("5", preparedStatement, employee.get(4));
+            DatabaseEntry databaseEntry6 = new DatabaseEntry("6", preparedStatement, employee.get(5));
+            DatabaseEntry databaseEntry7 = new DatabaseEntry("7", preparedStatement, employee.get(6));
+            DatabaseEntry databaseEntry8 = new DatabaseEntry("8", preparedStatement, employee.get(7));
+            databaseEntry1.databaseInformationEntry();
+            databaseEntry2.databaseInformationEntry();
+            databaseEntry3.databaseInformationEntry();
+            databaseEntry4.databaseInformationEntry();
+            databaseEntry5.databaseInformationEntry();
+            databaseEntry6.databaseInformationEntry();
+            databaseEntry7.databaseInformationEntry();
+            databaseEntry8.databaseInformationEntry();
         }
         catch (SQLException e)
         {
             logger.error(e.toString());
         }
-
     }
-
 
     public static Vector<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
     {
@@ -173,28 +173,6 @@ public class DatabaseIO
         stringBuilder.append("SELECT * FROM `employees`");
         stringBuilder.append("\nWHERE empID = ");
         stringBuilder.append(empID);
-        stringBuilder.append(";");
-
-        return stringBuilder.toString();
-    }
-
-    public static String buildSelectMultipleEmployees(int[] empIDs)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SELECT * FROM `employees`");
-        stringBuilder.append("\nWHERE ");
-
-        for (int i = 0; i < empIDs.length; i++)
-        {
-            stringBuilder.append("empID = ");
-            stringBuilder.append(empIDs[i]);
-
-            if (i < empIDs.length - 1)
-            {
-                stringBuilder.append(" || ");
-            }
-        }
-
         stringBuilder.append(";");
 
         return stringBuilder.toString();
