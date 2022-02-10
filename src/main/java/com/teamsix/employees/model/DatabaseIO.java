@@ -128,39 +128,6 @@ public class DatabaseIO
         return null;
     }
 
-    public static List<Employee> getEmployees(int[] empIDs)
-    {
-        try
-        {
-            Connection connection = ConnectionFactory.getConnection();
-            connection.setAutoCommit(false); // hacky efficiency code
-            Statement statement = connection.createStatement();
-
-            List<Employee> employeeList = new ArrayList<>();
-            String builtSQlRequest = buildSelectMultipleEmployees(empIDs);
-
-            System.out.println(builtSQlRequest);
-
-            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
-
-            while (resultSet.next())
-            {
-                employeeList.add(new Employee(resultSet));
-            }
-
-            resultSet.close();
-            connection.setAutoCommit(true); // hacky efficiency code
-
-            return employeeList;
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
-
-        return null;
-    }
-
     public static String buildInsertStatement(Employee employee)
     {
         StringBuilder stringBuilder = new StringBuilder();

@@ -10,11 +10,12 @@ public class DatabaseIOExample
 {
     public static void main(String[] args)
     {
+        double startTime = System.nanoTime();
         DatabaseIO.linkToSQLDatabase();
         DatabaseIO.writeEmployeeEntries();
 
-        Employee employee = DatabaseIO.getEmployee(877054);
-        System.out.println(employee);
+//        Employee employee = DatabaseIO.getEmployee(877054);
+//        System.out.println(employee);
 
 //        System.out.println();
 //        List<Employee> employees = DatabaseIO.getEmployees(new int[] {15, 13, 25});
@@ -25,6 +26,8 @@ public class DatabaseIOExample
 //            System.out.println(employeeToOutput.toString());
 //        }
 
+        double endTime = System.nanoTime();
+        System.out.println("This operation took " + ((endTime-startTime)/1000000000) + " seconds");
         ConnectionFactory.closeConnection();
     }
 }
