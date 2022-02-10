@@ -1,11 +1,6 @@
 package com.teamsix.employees;
 
-import com.teamsix.employees.model.ConnectionFactory;
 import com.teamsix.employees.model.DatabaseIO;
-import com.teamsix.employees.model.Employee;
-
-import java.util.List;
-import java.util.Vector;
 
 public class DatabaseIOExample
 {

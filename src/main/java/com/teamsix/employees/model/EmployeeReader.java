@@ -5,17 +5,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class EmployeeReader
 {
-    private List<Employee> duplicates;
-    private List<Employee> emptyFields;
-    public List<Employee> getDuplicates() {
+    private ArrayList<Employee> duplicates;
+    private ArrayList<Employee> emptyFields;
+    public ArrayList<Employee> getDuplicates() {
         return duplicates;
     }
-    public List<Employee> getEmptyFields() {
+    public ArrayList<Employee> getEmptyFields() {
         return emptyFields;
     }
 
@@ -32,10 +31,10 @@ public class EmployeeReader
         this.pathToReadCSVFrom = pathToReadCSVFrom;
     }
 
-    public List<Employee> getValue()
+    public ArrayList<Employee> getValue()
     {
         String line = "";
-        List<Employee> employees = new ArrayList<>();
+        ArrayList<Employee> employees = new ArrayList<>();
         duplicates = new ArrayList<>();
         emptyFields = new ArrayList<>();
 
@@ -69,21 +68,21 @@ public class EmployeeReader
             readerResults.append("\nNumber of records with empty fields: ");
             readerResults.append(emptyFields.size());
             readerResults.append("\n");
-            logger.info(readerResults.toString());
+            logger.info(() -> readerResults.toString());
 
             return employees;
 
         }
         catch (IOException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
 
 
         return null;
     }
 
-    public boolean employeeExists(Employee employee, List<Employee> employees)
+    public boolean employeeExists(Employee employee, ArrayList<Employee> employees)
     {
         for (Employee thisEmployee : employees) {
             if (thisEmployee.getEmpID() == employee.getEmpID()) {

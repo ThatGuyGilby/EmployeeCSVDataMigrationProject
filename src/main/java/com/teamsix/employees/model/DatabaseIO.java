@@ -5,14 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class DatabaseIO
 {
     private static final Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
 
-    private static List<Employee> employees;
+    private static ArrayList<Employee> employees;
 
     private static PreparedStatement createTableStatement;
     private static PreparedStatement dropTableStatement;
@@ -35,30 +33,29 @@ public class DatabaseIO
         generateDatabaseEntries(threadsToUse, employees);
     }
 
-    public static void generateDatabaseEntries(int numberOfThreads, List<Employee> employeeList)
+    public static void generateDatabaseEntries(int numberOfThreads, ArrayList<Employee> employeeList)
     {
-        Vector<Vector<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
+        ArrayList<ArrayList<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
 
         DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
         {
-            Vector<Employee> current = new Vector<>(employeesToPersist.get(i));
+            ArrayList<Employee> current = new ArrayList<>(employeesToPersist.get(i));
 
             DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), current);
             entries[i] = entry;
         }
 
-        for (int i = 0; i < entries.length; i++)
+        for (DatabaseEntry entry : entries)
         {
-            DatabaseEntry entry = entries[i];
             Thread thread = new Thread(entry);
             thread.start();
         }
     }
 
-    public static Vector<Vector<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    public static ArrayList<ArrayList<Employee>> splitListIntoChunks(int chunks, ArrayList<Employee> list)
     {
-        Vector<Vector<Employee>> subSets = new Vector<>();
+        ArrayList<ArrayList<Employee>> subSets = new ArrayList<>();
         int chunkSize = list.size() / chunks;
 
         for (int i = 0; i < chunks; i++)
@@ -67,7 +64,7 @@ public class DatabaseIO
             {
                 int chunkFloor = 0;
 
-                subSets.add(new Vector<>(list.subList(chunkFloor, chunkSize)));
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkSize)));
                 System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkSize);
             }
             else if (i < chunks - 1)
@@ -75,7 +72,7 @@ public class DatabaseIO
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = (chunkSize * (i + 1));
 
-                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
             }
             else
@@ -83,13 +80,13 @@ public class DatabaseIO
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = list.size();
 
-                subSets.add(new Vector<>(list.subList(chunkFloor, chunkCeil)));
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
                 System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
                 System.out.println();
             }
         }
 
-        return new Vector<>(subSets);
+        return subSets;
     }
 
     public static Employee getEmployee(int empID)
@@ -104,7 +101,7 @@ public class DatabaseIO
             }
             catch (SQLException e)
             {
-                e.printStackTrace();
+                logger.error(() -> e.toString());
             }
         }
 
@@ -114,11 +111,10 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(() -> e.toString());
         }
 
         ConnectionFactory.returnConnectionToPool(connection);
-        connection = null;
 
         return null;
     }
@@ -148,7 +144,7 @@ public class DatabaseIO
             }
             catch (SQLException e)
             {
-                e.printStackTrace();
+                logger.error(() -> e.toString());
             }
         }
 
@@ -158,11 +154,10 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(() -> e.toString());
         }
 
         ConnectionFactory.returnConnectionToPool(connection);
-        connection = null;
     }
 
     public static void dropTable()
@@ -177,7 +172,7 @@ public class DatabaseIO
             }
             catch (SQLException e)
             {
-                e.printStackTrace();
+                logger.error(() -> e.toString());
             }
         }
 
@@ -187,10 +182,9 @@ public class DatabaseIO
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(() -> e.toString());
         }
 
         ConnectionFactory.returnConnectionToPool(connection);
-        connection = null;
     }
 }

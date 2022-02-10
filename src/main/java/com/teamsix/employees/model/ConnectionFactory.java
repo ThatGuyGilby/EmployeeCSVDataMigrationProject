@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Queue;
-import java.util.Vector;
 
 public class ConnectionFactory
 {
@@ -30,7 +29,7 @@ public class ConnectionFactory
         }
         catch (SQLException | IOException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
 
         return null;
@@ -61,7 +60,7 @@ public class ConnectionFactory
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            logger.error(() -> e.toString());
         }
 
         return connection;
@@ -78,7 +77,7 @@ public class ConnectionFactory
         }
         catch (SQLException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
     }
 

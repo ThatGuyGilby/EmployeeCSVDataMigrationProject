@@ -86,7 +86,7 @@ public class Employee
         }
         catch (ParseException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
 
         try
@@ -99,7 +99,7 @@ public class Employee
         }
         catch (ParseException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
 
         this.salary = Integer.parseInt(data[9]);
@@ -122,7 +122,7 @@ public class Employee
         }
         catch (SQLException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
     }
 

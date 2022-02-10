@@ -1,6 +1,9 @@
 package com.teamsix.employees.view;
 
+import com.teamsix.employees.model.ConnectionFactory;
 import com.teamsix.employees.model.EmployeeReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Objects;
@@ -8,6 +11,8 @@ import java.util.Scanner;
 
 public class EmployeeView
 {
+    private static final Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
+
     public static void userFileInput()
     {
         System.out.print("Please enter a valid filepath -> ");
@@ -37,8 +42,7 @@ public class EmployeeView
         }
         catch (IndexOutOfBoundsException e)
         {
-            e.printStackTrace();
-            System.out.println("");
+            logger.error(() -> e.toString());
         }
     }
 }
