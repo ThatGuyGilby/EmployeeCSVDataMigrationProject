@@ -106,18 +106,4 @@ public class EmployeeReaderTest {
         Assertions.assertEquals(expectedEmptyField,actualEmptyField);
     }
 
-    @Test
-    @DisplayName("Check correct output: Test 5 unique employee records with empty NON-string field")
-    public void testFiveUniqueEmployeeRecordsWithEmptyNONStringField(){
-
-        EmployeeReader employeeReader = new EmployeeReader();
-        employeeReader.setPathToReadCSVFrom("unitTestCsv/testNonStringEmpty.csv");
-        employeeReader.getValue();
-        int actualDuplicates = employeeReader.getDuplicates().size();
-        int actualEmptyField = employeeReader.getEmptyFields().size();
-        int employeeSize = employeeReader.getValue().size();
-
-    }
-
-
 }
