@@ -9,38 +9,67 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Queue;
 
 public class ConnectionFactory
 {
     private static Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
-    private static Connection connection = null;
+    private static int defaultPooledConnections = 25;
+    private static Queue<Connection> connections = new LinkedList<>();
 
-    public static Connection getConnection()
+    private static Connection getConnection()
     {
-        if (connection == null)
+        try (InputStream inputStream = new FileInputStream("src/main/resources/mysql.properties"))
         {
-            try (InputStream inputStream = new FileInputStream("src/main/resources/mysql.properties"))
-            {
-                Properties properties = new Properties();
-                properties.load(inputStream);
+            Properties properties = new Properties();
+            properties.load(inputStream);
 
-                connection = DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
-            }
-            catch (SQLException | IOException e)
-            {
-                logger.error(e.toString());
-            }
+            Connection connection = DriverManager.getConnection(properties.getProperty("dbURL"), properties.getProperty("dbUser"), properties.getProperty("dbPassword"));
+            return connection;
+        }
+        catch (SQLException | IOException e)
+        {
+            logger.error(e.toString());
         }
 
-        return connection;
+        return null;
     }
 
-    public static void closeConnection()
+    public static void setPooledConnections(int numberOfConnections)
+    {
+        connections = new LinkedList<>();
+
+        for (int i = 0; i < numberOfConnections; i++)
+        {
+            connections.add(getConnection());
+        }
+    }
+
+    public static Connection getConnectionFromPool()
+    {
+        if (connections.size() <= 0)
+        {
+            setPooledConnections(defaultPooledConnections);
+        }
+
+        return connections.remove();
+    }
+
+    public static void returnConnectionToPool(Connection connection)
+    {
+        connections.add(connection);
+    }
+
+    public static void closeConnections()
     {
         try
         {
-            connection.close();
+            for (int i = 0; i < connections.size(); i++)
+            {
+                connections.remove().close();
+            }
         }
         catch (SQLException e)
         {

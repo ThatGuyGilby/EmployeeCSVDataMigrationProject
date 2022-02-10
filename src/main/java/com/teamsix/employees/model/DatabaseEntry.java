@@ -4,32 +4,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Vector;
 
-public class DatabaseEntry extends Thread
+public class DatabaseEntry implements Runnable
 {
     private Connection connection;
     private String name;
     private List<Employee> list;
     private PreparedStatement preparedStatement;
 
-    public DatabaseEntry(String name, List<Employee> list){
+    public DatabaseEntry(String name, Vector<Employee> list){
         this.name = name;
-        this.connection = ConnectionFactory.getConnection();
-        try {
+        this.connection = ConnectionFactory.getConnectionFromPool();
+        try
+        {
             this.preparedStatement = connection.prepareStatement(
                     "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
                             "VALUES (?,?,?,?,?,?,?,?,?,?)");
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
-        ;
-        this.list = list;
+
+        this.list = new Vector<>(list);
     }
 
-    public void databaseInformationEntry() throws SQLException {
+    @Override
+    public void run(){
         double timeBefore = System.nanoTime();
-        try {
-            for (Employee e : list) {
+        try
+        {
+            for (int i = 0; i < list.size(); i++)
+            {
+                Employee e = list.get(i);
                 preparedStatement.setInt(1, e.getEmpID());
                 preparedStatement.setString(2, e.getNamePrefix());
                 preparedStatement.setString(3, e.getFirstName());
@@ -41,21 +49,16 @@ public class DatabaseEntry extends Thread
                 preparedStatement.setDate(9, e.getDateOfJoining());
                 preparedStatement.setFloat(10, e.getSalary());
 
-                preparedStatement.execute();
+                preparedStatement.addBatch();
             }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        System.out.println(name + " took: " + ((System.nanoTime() - timeBefore)/1000000000) + " seconds");
-    }
 
-    @Override
-    public void run(){
-        try {
-            databaseInformationEntry();
-        } catch (SQLException e) {
+            preparedStatement.executeBatch();
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
+
+        System.out.println(name + " took: " + ((System.nanoTime() - timeBefore)/1000000000) + " seconds");
     }
 }

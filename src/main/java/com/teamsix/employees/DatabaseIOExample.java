@@ -12,11 +12,10 @@ public class DatabaseIOExample
     public static void main(String[] args)
     {
         double startTime = System.nanoTime();
+        ConnectionFactory.setPooledConnections(5);
+
         DatabaseIO.linkToSQLDatabase();
-        DatabaseIO.writeEmployeeEntries();
-
-
-
+        DatabaseIO.writeEmployeeEntries(100);
 //        Employee employee = DatabaseIO.getEmployee(877054);
 //        System.out.println(employee);
 
@@ -29,12 +28,12 @@ public class DatabaseIOExample
 //            System.out.println(employeeToOutput.toString());
 //        }
 
-        int i = Runtime.getRuntime().availableProcessors();
+        //int i = Runtime.getRuntime().availableProcessors();
 
-        System.out.println(i);
+        //System.out.println(i);
 
         double endTime = System.nanoTime();
-        System.out.println("This operation took " + ((endTime-startTime)/1000000000) + " seconds");
+        System.out.println("Reading the CSV file provided took " + ((endTime-startTime)/1000000000) + " seconds\n");
         //ConnectionFactory.closeConnection();
     }
 }
