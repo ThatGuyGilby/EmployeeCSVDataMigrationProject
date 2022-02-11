@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.stream.IntStream;
 
@@ -125,7 +124,27 @@ public class DatabaseIO
         {
             try
             {
-                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM employees WHERE empID = ?;");
+                String sql = "SELECT * FROM employees WHERE empID = ?;";
+                selectSpecificEmployeeStatement = connection.prepareStatement(sql);
+                selectSpecificEmployeeStatement.setInt(1, empID);
+                rs = selectSpecificEmployeeStatement.executeQuery();
+
+
+                if (rs.next()) {
+
+                    return rs.getInt("empID")
+                            + " | " + rs.getString("namePrefix")
+                            + " | " + rs.getString("firstName")
+                            + " | " + rs.getString("middleInitial")
+                            + " | " + rs.getString("lastName")
+                            + " | " + rs.getString("gender")
+                            + " | " + rs.getString("email")
+                            + " | " + rs.getDate("dateOfBirth")
+                            + " | " + rs.getDate("dateOfJoining")
+                            + " | $" + rs.getFloat("salary");
+                }
+                else
+                    return "A user was not found with that Employee ID";
             }
             catch (SQLException e)
             {

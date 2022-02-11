@@ -23,6 +23,15 @@ public class EmployeeManagerMain
 
     public static void main(String[] args)
     {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Would you like to just query the database for an Employee?");
+        boolean doFullProgram = true;
+        if (scanner.hasNext() && scanner.next().equalsIgnoreCase("yes")){
+            doFullProgram = false;
+            doSearch(doFullProgram);
+
+        }
+
         String path = EmployeeView.takeFileInput();
         int threadsToRun = EmployeeView.takeThreadInput();
 
@@ -69,10 +78,10 @@ public class EmployeeManagerMain
             e.printStackTrace();
         }
 
-        doSearch();
+        doSearch(doFullProgram);
     }
 
-    private static void doSearch() {
+    private static void doSearch(boolean bool) {
         boolean doSearch = EmployeeView.doYouWishToSearchTheDatabaseForAUser();
 
         if (doSearch){
@@ -86,6 +95,8 @@ public class EmployeeManagerMain
             }
 
         }
+        if (!bool)
+            System.exit(0);
     }
 
     public static void nameLogFile(String name, int threads) throws IOException
