@@ -27,11 +27,13 @@ public class DatabaseIO
 
     private static Vector<Double> resultsCache;
 
-    public static void readEmployeesFromFile()
+    public static ArrayList<Employee> readEmployeesFromFile(String path)
     {
         EmployeeReader reader = new EmployeeReader();
-        reader.setPathToReadCSVFrom("src/main/resources/employeesbig.csv");
+        reader.setPathToReadCSVFrom(path);
         employees = reader.getValue();
+
+        return employees;
     }
 
     public static double writeEmployeeEntries(int threadsToUse)
@@ -75,7 +77,7 @@ public class DatabaseIO
         double averageTime = totalTime / numberOfThreads;
         double roundedAverageTime = (Math.round((averageTime)*100.0)/100.0);
 
-        logger.info(() -> "All threads executed successfully\n\nAverage execution time: " + roundedAverageTime + " seconds\n\n");
+        logger.info(() -> "All threads executed successfully\n\nAverage execution time: " + roundedAverageTime + " seconds\n");
 
         return roundedAverageTime;
     }
