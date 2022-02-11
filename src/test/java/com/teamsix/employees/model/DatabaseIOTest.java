@@ -1,8 +1,6 @@
 package com.teamsix.employees.model;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,17 +27,23 @@ public class DatabaseIOTest {
     Statement statement;
     ResultSet resultSet;
 
-    public void closeConnection() throws SQLException {
+    @BeforeEach
+    public void setConnectionAndWriteEmployeeEntries(){
+        DatabaseIO.readEmployeesFromFile();
+        DatabaseIO.writeEmployeeEntries(8);
+    }
+
+    @AfterEach
+    public void closeConnection() throws SQLException{
         resultSet.close();
         statement.close();
         connection.close();
     }
 
+
     @DisplayName("Row count")
     @Test
     public void rowCount() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees;");
         int rowCount = 0;
@@ -48,14 +52,11 @@ public class DatabaseIOTest {
         }
 
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of ids")
     @Test
     public void anyNullValuesOfIds() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -67,14 +68,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of name prefix")
     @Test
     public void anyNullValuesOfNamePrefix() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -86,14 +84,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943,rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of first name")
     @Test
     public void anyNullValuesOfFirstName() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(1);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -104,14 +99,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of last name")
     @Test
     public void anyNullValuesOfLastName() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -122,14 +114,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of gender")
     @Test
     public void anyNullValuesOfGender() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -140,14 +129,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943,rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of email")
     @Test
     public void anyNullValuesOfEmail() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -158,14 +144,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of date of birth")
     @Test
     public void anyNullValuesOfDateOfBirth() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -176,14 +159,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of dateOfJoining")
     @Test
     public void anyNullValuesOfDateOfJoining() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -194,14 +174,11 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 
     @DisplayName("Any null values of salary")
     @Test
     public void anyNullValuesOfSalary() throws SQLException {
-        DatabaseIO.readEmployeesFromFile();
-        DatabaseIO.writeEmployeeEntries(8);
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT * FROM employees");
         int rowCount = 0;
@@ -212,6 +189,5 @@ public class DatabaseIOTest {
             rowCount++;
         }
         Assertions.assertEquals(9943, rowCount);
-        closeConnection();
     }
 }
