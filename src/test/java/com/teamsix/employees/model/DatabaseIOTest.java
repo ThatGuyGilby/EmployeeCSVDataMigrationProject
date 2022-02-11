@@ -29,7 +29,7 @@ public class DatabaseIOTest {
 
     @BeforeEach
     public void setConnectionAndWriteEmployeeEntries(){
-        DatabaseIO.readEmployeesFromFile();
+        DatabaseIO.readEmployeesFromFile("src/main/resources/employeesbig.csv");
         DatabaseIO.writeEmployeeEntries(8);
     }
 
