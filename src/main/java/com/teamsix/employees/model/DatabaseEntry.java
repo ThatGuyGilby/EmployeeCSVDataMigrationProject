@@ -35,7 +35,7 @@ public class DatabaseEntry implements Runnable
 
     @Override
     public void run(){
-        double timeBefore = System.nanoTime();
+        double startTime = System.nanoTime();
         try
         {
             for (Employee e : list)
@@ -65,6 +65,10 @@ public class DatabaseEntry implements Runnable
             logger.error(() -> e.toString());
         }
 
-        System.out.println(name + " took: " + ((System.nanoTime() - timeBefore)/1000000000) + " seconds");
+        double timeTaken = (Math.round(((System.nanoTime() - startTime)/1000000000)*100.0)/100.0);
+
+        DatabaseIO.sendResult(timeTaken);
+
+        logger.info(() -> "Executed in: " + timeTaken + " seconds");
     }
 }

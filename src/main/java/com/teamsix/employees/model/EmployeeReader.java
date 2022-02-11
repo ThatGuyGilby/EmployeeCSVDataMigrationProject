@@ -33,7 +33,6 @@ public class EmployeeReader
 
     public ArrayList<Employee> getValue()
     {
-        String line = "";
         ArrayList<Employee> employees = new ArrayList<>();
         duplicates = new ArrayList<>();
         emptyFields = new ArrayList<>();
@@ -42,26 +41,18 @@ public class EmployeeReader
         {
             bufferedReader.readLine(); // Get rid of the header line
 
-            while((line = bufferedReader.readLine()) != null)
-            {
-                String[] values = line.replaceAll("\\s", "").split(",");
+            bufferedReader.lines().map(line -> line.replaceAll("\\s", "").split(",")).forEachOrdered(values -> {
                 Employee employee = new Employee(values);
-
-                if (entryHasEmptyFields(values))
-                {
+                if (entryHasEmptyFields(values)) {
                     emptyFields.add(employee);
-                }
-                else if (employeeExists(employee, employees))
-                {
+                } else if (employeeExists(employee, employees)) {
                     duplicates.add(employee);
-                }
-                else
-                {
+                } else {
                     employees.add(employee);
                 }
-            }
+            });
 
-            StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\nNumber of clean records: ");
+            StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\n\nNumber of clean records: ");
             readerResults.append(employees.size());
             readerResults.append("\nNumber of duplicate records: ");
             readerResults.append(duplicates.size());

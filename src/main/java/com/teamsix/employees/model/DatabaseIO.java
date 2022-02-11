@@ -5,6 +5,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
+import java.util.stream.IntStream;
 
 public class DatabaseIO
 {
@@ -16,6 +19,14 @@ public class DatabaseIO
     private static PreparedStatement dropTableStatement;
     private static PreparedStatement selectSpecificEmployeeStatement;
 
+    public static ArrayList<Thread> getThreads() {
+        return threads;
+    }
+
+    private static ArrayList<Thread> threads;
+
+    private static Vector<Double> resultsCache;
+
     public static void readEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
@@ -23,34 +34,55 @@ public class DatabaseIO
         employees = reader.getValue();
     }
 
-    public static void writeEmployeeEntries(int threadsToUse)
+    public static double writeEmployeeEntries(int threadsToUse)
     {
         ConnectionFactory.setPooledConnections(threadsToUse);
 
         dropTable();
         createTable();
 
-        generateDatabaseEntries(threadsToUse, employees);
+        return generateDatabaseEntries(threadsToUse, employees);
     }
 
-    public static void generateDatabaseEntries(int numberOfThreads, ArrayList<Employee> employeeList)
+    public static double generateDatabaseEntries(int numberOfThreads, ArrayList<Employee> employeeList)
     {
         ArrayList<ArrayList<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
 
-        DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
-        for (int i = 0; i < numberOfThreads; i++)
-        {
-            ArrayList<Employee> current = new ArrayList<>(employeesToPersist.get(i));
+        resultsCache = new Vector<>();
 
+        DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
+        IntStream.range(0, numberOfThreads).forEachOrdered(i -> {
+            ArrayList<Employee> current = new ArrayList<>(employeesToPersist.get(i));
             DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), current);
             entries[i] = entry;
-        }
+        });
 
-        for (DatabaseEntry entry : entries)
+        threads = new ArrayList<>();
+        for (int i = 0, entriesLength = entries.length; i < entriesLength; i++)
         {
+            DatabaseEntry entry = entries[i];
             Thread thread = new Thread(entry);
             thread.start();
+            threads.add(thread);
         }
+
+        while (threads.size() > resultsCache.size())
+        {
+            System.out.print("");
+        }
+
+        double totalTime = IntStream.range(0, numberOfThreads).mapToDouble(i -> resultsCache.get(i)).sum();
+        double averageTime = totalTime / numberOfThreads;
+        double roundedAverageTime = (Math.round((averageTime)*100.0)/100.0);
+
+        logger.info(() -> "All threads executed successfully\n\nAverage execution time: " + roundedAverageTime + " seconds\n\n");
+
+        return roundedAverageTime;
+    }
+
+    public static void sendResult(double result)
+    {
+        resultsCache.add(result);
     }
 
     public static ArrayList<ArrayList<Employee>> splitListIntoChunks(int chunks, ArrayList<Employee> list)
@@ -58,33 +90,26 @@ public class DatabaseIO
         ArrayList<ArrayList<Employee>> subSets = new ArrayList<>();
         int chunkSize = list.size() / chunks;
 
-        for (int i = 0; i < chunks; i++)
-        {
-            if (i == 0)
-            {
+        IntStream.range(0, chunks).forEachOrdered(i -> {
+            if (i == 0) {
                 int chunkFloor = 0;
 
                 subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkSize)));
-                System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkSize);
-            }
-            else if (i < chunks - 1)
-            {
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkSize);
+            } else if (i < chunks - 1) {
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = (chunkSize * (i + 1));
 
                 subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
-                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
-            }
-            else
-            {
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkCeil);
+            } else {
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = list.size();
 
                 subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
-                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
-                System.out.println();
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkCeil + "\n");
             }
-        }
+        });
 
         return subSets;
     }

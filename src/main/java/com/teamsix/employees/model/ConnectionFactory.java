@@ -49,7 +49,7 @@ public class ConnectionFactory
     {
         if (connections.size() == 0)
         {
-            int fallbackPoolSize = 25;
+            int fallbackPoolSize = 100;
             setPooledConnections(fallbackPoolSize);
         }
 
