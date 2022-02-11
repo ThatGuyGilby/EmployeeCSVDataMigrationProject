@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
 
 public class EmployeeManagerMain
 {
@@ -66,6 +67,24 @@ public class EmployeeManagerMain
         } catch (IOException e)
         {
             e.printStackTrace();
+        }
+
+        doSearch();
+    }
+
+    private static void doSearch() {
+        boolean doSearch = EmployeeView.doYouWishToSearchTheDatabaseForAUser();
+
+        if (doSearch){
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Please enter an employee number");
+            if (scanner.hasNextInt()){
+                int employeeID = scanner.nextInt();
+                if (employeeID > 0){
+                    System.out.println(DatabaseIO.getEmployee(employeeID));
+                }
+            }
+
         }
     }
 

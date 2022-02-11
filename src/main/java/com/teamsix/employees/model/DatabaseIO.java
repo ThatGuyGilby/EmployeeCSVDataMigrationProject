@@ -116,15 +116,16 @@ public class DatabaseIO
         return subSets;
     }
 
-    public static Employee getEmployee(int empID)
+    public static String getEmployee(int empID)
     {
         Connection connection = ConnectionFactory.getConnectionFromPool();
+        ResultSet rs;
 
         if (selectSpecificEmployeeStatement == null)
         {
             try
             {
-                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM `employees`\nWHERE empID = ?;");
+                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM employees WHERE empID = ?;");
             }
             catch (SQLException e)
             {
@@ -132,14 +133,6 @@ public class DatabaseIO
             }
         }
 
-        try
-        {
-            return new Employee(selectSpecificEmployeeStatement.executeQuery());
-        }
-        catch (SQLException e)
-        {
-            logger.error(() -> e.toString());
-        }
 
         ConnectionFactory.returnConnectionToPool(connection);
 
