@@ -23,7 +23,7 @@ public class DatabaseIOExample
 
         ArrayList<Double> executionTimes = new ArrayList<>();
 
-        int loops = 1;
+        int loops = 5;
 
         for (int i = 0; i < loops; i++)
         {
