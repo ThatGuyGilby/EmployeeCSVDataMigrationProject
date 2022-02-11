@@ -1,35 +1,45 @@
 package com.teamsix.employees.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
 
-public class DatabaseEntry extends Thread
+public class DatabaseEntry implements Runnable
 {
+    private static final Logger logger = LogManager.getLogger(ConnectionFactory.class.getName());
     private Connection connection;
-    private String name;
-    private List<Employee> list;
+    private final String name;
+    private final ArrayList<Employee> list;
     private PreparedStatement preparedStatement;
 
-    public DatabaseEntry(String name, List<Employee> list){
+    public DatabaseEntry(String name, ArrayList<Employee> list){
         this.name = name;
-        this.connection = ConnectionFactory.getConnection();
-        try {
-            this.preparedStatement = connection.prepareStatement(
-                    "INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)" +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?)");
-        } catch (SQLException e) {
-            e.printStackTrace();
+        this.connection = ConnectionFactory.getConnectionFromPool();
+        try
+        {
+            StringBuilder stringBuilder = new StringBuilder("INSERT INTO employees(empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
+            stringBuilder.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+            this.preparedStatement = connection.prepareStatement(stringBuilder.toString());
         }
-        ;
+        catch (SQLException e)
+        {
+            logger.error(() -> e.toString());
+        }
+
         this.list = list;
     }
 
-    public void databaseInformationEntry() throws SQLException {
-        double timeBefore = System.nanoTime();
-        try {
-            for (Employee e : list) {
+    @Override
+    public void run(){
+        double startTime = System.nanoTime();
+        try
+        {
+            for (Employee e : list)
+            {
                 preparedStatement.setInt(1, e.getEmpID());
                 preparedStatement.setString(2, e.getNamePrefix());
                 preparedStatement.setString(3, e.getFirstName());
@@ -41,21 +51,24 @@ public class DatabaseEntry extends Thread
                 preparedStatement.setDate(9, e.getDateOfJoining());
                 preparedStatement.setFloat(10, e.getSalary());
 
-                preparedStatement.execute();
+                preparedStatement.addBatch();
             }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        System.out.println(name + " took: " + ((System.nanoTime() - timeBefore)/1000000000) + " seconds");
-    }
 
-    @Override
-    public void run(){
-        try {
-            databaseInformationEntry();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            preparedStatement.executeBatch();
+
+            connection.commit();
+            ConnectionFactory.returnConnectionToPool(connection);
+            connection = null;
         }
+        catch (SQLException e)
+        {
+            logger.error(() -> e.toString());
+        }
+
+        double timeTaken = (Math.round(((System.nanoTime() - startTime)/1000000000)*100.0)/100.0);
+
+        DatabaseIO.sendResult(timeTaken);
+
+        logger.info(() -> "Executed in: " + timeTaken + " seconds");
     }
 }

@@ -5,11 +5,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class EmployeeReader
 {
+    private ArrayList<Employee> duplicates;
+    private ArrayList<Employee> emptyFields;
+    public ArrayList<Employee> getDuplicates() {
+        return duplicates;
+    }
+    public ArrayList<Employee> getEmptyFields() {
+        return emptyFields;
+    }
+
     private static Logger logger = LogManager.getLogger(EmployeeReader.class.getName());
     String pathToReadCSVFrom;
 
@@ -23,58 +31,49 @@ public class EmployeeReader
         this.pathToReadCSVFrom = pathToReadCSVFrom;
     }
 
-    public List<Employee> getValue()
+    public ArrayList<Employee> getValue()
     {
-        String line = "";
-        List<Employee> employees = new ArrayList<>();
-        List<Employee> duplicates = new ArrayList<>();
-        List<Employee> emptyFields = new ArrayList<>();
+        ArrayList<Employee> employees = new ArrayList<>();
+        duplicates = new ArrayList<>();
+        emptyFields = new ArrayList<>();
 
-        try
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToReadCSVFrom)))
         {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToReadCSVFrom));
             bufferedReader.readLine(); // Get rid of the header line
 
-            while((line = bufferedReader.readLine()) != null)
-            {
-                String[] values = line.replaceAll("\\s", "").split(",");
+            bufferedReader.lines().map(line -> line.replaceAll("\\s", "").split(",")).forEachOrdered(values -> {
                 Employee employee = new Employee(values);
-
-                if (entryHasEmptyFields(values))
-                {
+                if (entryHasEmptyFields(values)) {
                     emptyFields.add(employee);
-                }
-                else if (employeeExists(employee, employees))
-                {
+                } else if (employeeExists(employee, employees)) {
                     duplicates.add(employee);
-                }
-                else
-                {
+                } else {
                     employees.add(employee);
                 }
-            }
+            });
 
-            StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\nNumber of clean records: ");
+            StringBuilder readerResults = new StringBuilder("EmployeeReader read results successfully\n\nNumber of clean records: ");
             readerResults.append(employees.size());
             readerResults.append("\nNumber of duplicate records: ");
             readerResults.append(duplicates.size());
             readerResults.append("\nNumber of records with empty fields: ");
             readerResults.append(emptyFields.size());
-            logger.info(readerResults.toString());
+            readerResults.append("\n");
+            logger.info(() -> readerResults.toString());
 
             return employees;
 
         }
         catch (IOException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
 
 
         return null;
     }
 
-    public boolean employeeExists(Employee employee, List<Employee> employees)
+    public boolean employeeExists(Employee employee, ArrayList<Employee> employees)
     {
         for (Employee thisEmployee : employees) {
             if (thisEmployee.getEmpID() == employee.getEmpID()) {

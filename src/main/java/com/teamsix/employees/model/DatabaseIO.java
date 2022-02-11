@@ -5,224 +5,211 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Vector;
+import java.util.stream.IntStream;
 
 public class DatabaseIO
 {
-    private static Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
+    private static final Logger logger = LogManager.getLogger(DatabaseIO.class.getName());
 
-    private static List<Employee> employees;
+    private static ArrayList<Employee> employees;
 
-    public static void linkToSQLDatabase()
-    {
-        ReadEmployeesFromFile();
+    private static PreparedStatement createTableStatement;
+    private static PreparedStatement dropTableStatement;
+    private static PreparedStatement selectSpecificEmployeeStatement;
 
-        try
-        {
-            Connection connection = ConnectionFactory.getConnection();
-            Statement statement = connection.createStatement();
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
+    public static ArrayList<Thread> getThreads() {
+        return threads;
     }
 
-    private static void ReadEmployeesFromFile()
+    private static ArrayList<Thread> threads;
+
+    private static Vector<Double> resultsCache;
+
+    public static void readEmployeesFromFile()
     {
         EmployeeReader reader = new EmployeeReader();
         reader.setPathToReadCSVFrom("src/main/resources/employeesbig.csv");
         employees = reader.getValue();
     }
 
-    public static void writeEmployeeEntries(int threads)
+    public static double writeEmployeeEntries(int threadsToUse)
     {
-        try
-        {
-            Connection connection = ConnectionFactory.getConnection();
-            Statement statement = connection.createStatement();
+        ConnectionFactory.setPooledConnections(threadsToUse);
 
-            statement.executeUpdate(buildDropStatement());
-            statement.executeUpdate(buildCreateStatement());
+        dropTable();
+        createTable();
 
-            generateDatabaseEntries(2, employees);
-        }
-        catch (SQLException e)
-        {
-            logger.error(e.toString());
-        }
+        return generateDatabaseEntries(threadsToUse, employees);
     }
 
-    public static void generateDatabaseEntries(int numberOfThreads, List<Employee> employeeList)
+    public static double generateDatabaseEntries(int numberOfThreads, ArrayList<Employee> employeeList)
     {
-        ArrayList<List<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
+        ArrayList<ArrayList<Employee>> employeesToPersist = splitListIntoChunks(numberOfThreads, employeeList);
+
+        resultsCache = new Vector<>();
 
         DatabaseEntry[] entries = new DatabaseEntry[numberOfThreads];
-        for (int i = 0; i < numberOfThreads; i++)
-        {
-            DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), employeesToPersist.get(i));
+        IntStream.range(0, numberOfThreads).forEachOrdered(i -> {
+            ArrayList<Employee> current = new ArrayList<>(employeesToPersist.get(i));
+            DatabaseEntry entry = new DatabaseEntry(String.valueOf(i), current);
             entries[i] = entry;
+        });
+
+        threads = new ArrayList<>();
+        for (int i = 0, entriesLength = entries.length; i < entriesLength; i++)
+        {
+            DatabaseEntry entry = entries[i];
+            Thread thread = new Thread(entry);
+            thread.start();
+            threads.add(thread);
         }
 
-        for (DatabaseEntry entry : entries)
+        while (threads.size() > resultsCache.size())
         {
-            entry.start();
+            System.out.print("");
         }
+
+        double totalTime = IntStream.range(0, numberOfThreads).mapToDouble(i -> resultsCache.get(i)).sum();
+        double averageTime = totalTime / numberOfThreads;
+        double roundedAverageTime = (Math.round((averageTime)*100.0)/100.0);
+
+        logger.info(() -> "All threads executed successfully\n\nAverage execution time: " + roundedAverageTime + " seconds\n\n");
+
+        return roundedAverageTime;
     }
 
-    public static ArrayList<List<Employee>> splitListIntoChunks(int chunks, List<Employee> list)
+    public static void sendResult(double result)
     {
-        ArrayList<List<Employee>> subSets = new ArrayList<>();
+        resultsCache.add(result);
+    }
+
+    public static ArrayList<ArrayList<Employee>> splitListIntoChunks(int chunks, ArrayList<Employee> list)
+    {
+        ArrayList<ArrayList<Employee>> subSets = new ArrayList<>();
         int chunkSize = list.size() / chunks;
 
-        for (int i = 0; i < chunks; i++)
-        {
-            if (i == 0)
-            {
+        IntStream.range(0, chunks).forEachOrdered(i -> {
+            if (i == 0) {
                 int chunkFloor = 0;
-                int chunkCeil = chunkSize;
 
-                subSets.add(list.subList(chunkFloor, chunkCeil));
-                System.out.println("Chunk " + i + " from " + chunkFloor +" - " + chunkCeil);
-            }
-            else if (i < chunks - 1)
-            {
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkSize)));
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkSize);
+            } else if (i < chunks - 1) {
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = (chunkSize * (i + 1));
 
-                subSets.add(list.subList(chunkFloor, chunkCeil));
-                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
-            }
-            else
-            {
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkCeil);
+            } else {
                 int chunkFloor = (chunkSize * i);
                 int chunkCeil = list.size();
 
-                subSets.add(list.subList(chunkFloor , chunkCeil));;
-                System.out.println("Chunk " + i + " from "+ chunkFloor + " - " + chunkCeil);
-                System.out.println("");
+                subSets.add(new ArrayList<>(list.subList(chunkFloor, chunkCeil)));
+                logger.info(() -> "Chunk " + i + " from " + chunkFloor + " - " + chunkCeil + "\n");
             }
-        }
+        });
 
         return subSets;
     }
 
     public static Employee getEmployee(int empID)
     {
+        Connection connection = ConnectionFactory.getConnectionFromPool();
+
+        if (selectSpecificEmployeeStatement == null)
+        {
+            try
+            {
+                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM `employees`\nWHERE empID = ?;");
+            }
+            catch (SQLException e)
+            {
+                logger.error(() -> e.toString());
+            }
+        }
+
         try
         {
-            Connection connection = ConnectionFactory.getConnection();
-            Statement statement = connection.createStatement();
-
-            List<Employee> employeeList = new ArrayList<>();
-            String builtSQlRequest = buildSelectSpecificEmployee(empID);
-
-            System.out.println(builtSQlRequest);
-
-            ResultSet resultSet = statement.executeQuery(builtSQlRequest);
-            resultSet.next();
-            Employee employeeToReturn = new Employee(resultSet);
-
-            resultSet.close();
-
-            return employeeToReturn;
+            return new Employee(selectSpecificEmployeeStatement.executeQuery());
         }
         catch (SQLException e)
         {
-            logger.error(e.toString());
+            logger.error(() -> e.toString());
         }
+
+        ConnectionFactory.returnConnectionToPool(connection);
 
         return null;
     }
 
-    public static String buildInsertStatement(Employee employee)
+    public static void createTable()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
-        stringBuilder.append("VALUES\n");
+        Connection connection = ConnectionFactory.getConnectionFromPool();
 
-        stringBuilder.append("(");
-        stringBuilder.append(employee.toString());
-        stringBuilder.append(")");
-
-        return stringBuilder.toString();
-    }
-
-    public static String buildInsertStatement(List<Employee> employeesToPersist)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO `employees` (empID, namePrefix, firstName, middleInitial, lastName, gender, email, dateOfBirth, dateOfJoining, salary)");
-        stringBuilder.append("VALUES\n");
-
-        for (int i = 0; i < employeesToPersist.size(); i++)
+        if (createTableStatement == null)
         {
-            Employee employeeToPersist = employeesToPersist.get(i);
-
-            if (i > 0)
+            try
             {
-                stringBuilder.append((",\n"));
-            }
+                StringBuilder stringBuilder = new StringBuilder("CREATE TABLE `employees` (\n  `empID` int NOT NULL,\n");
+                stringBuilder.append("  `namePrefix` varchar(5) DEFAULT NULL,\n");
+                stringBuilder.append("  `firstName` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `middleInitial` char(1) DEFAULT NULL,\n");
+                stringBuilder.append("  `lastName` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `gender` char(1) DEFAULT NULL,\n");
+                stringBuilder.append("  `email` varchar(45) DEFAULT NULL,\n");
+                stringBuilder.append("  `dateOfBirth` date DEFAULT NULL,\n");
+                stringBuilder.append("  `dateOfJoining` date DEFAULT NULL,\n");
+                stringBuilder.append("  `salary` decimal(10,0) DEFAULT NULL,\n");
+                stringBuilder.append("  PRIMARY KEY (`empID`)\n");
+                stringBuilder.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n");
 
-            stringBuilder.append("(");
-            stringBuilder.append(employeeToPersist.toString());
-            stringBuilder.append(")");
+                createTableStatement = connection.prepareStatement(stringBuilder.toString());
+            }
+            catch (SQLException e)
+            {
+                logger.error(() -> e.toString());
+            }
         }
 
-        return stringBuilder.toString();
+        try
+        {
+            createTableStatement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            logger.error(() -> e.toString());
+        }
+
+        ConnectionFactory.returnConnectionToPool(connection);
     }
 
-    public static String buildSelectSpecificEmployee(int empID)
+    public static void dropTable()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SELECT * FROM `employees`");
-        stringBuilder.append("\nWHERE empID = ");
-        stringBuilder.append(empID);
-        stringBuilder.append(";");
+        Connection connection = ConnectionFactory.getConnectionFromPool();
 
-        return stringBuilder.toString();
-    }
+        if (dropTableStatement == null)
+        {
+            try
+            {
+                dropTableStatement = connection.prepareStatement("DROP TABLE IF EXISTS `employees`;");
+            }
+            catch (SQLException e)
+            {
+                logger.error(() -> e.toString());
+            }
+        }
 
-    public static String buildCreateStatement()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(
-                "CREATE TABLE `employees` (\n" +
-                        "  `empID` int NOT NULL,\n" +
-                        "  `namePrefix` varchar(5) DEFAULT NULL,\n" +
-                        "  `firstName` varchar(45) DEFAULT NULL,\n" +
-                        "  `middleInitial` char(1) DEFAULT NULL,\n" +
-                        "  `lastName` varchar(45) DEFAULT NULL,\n" +
-                        "  `gender` char(1) DEFAULT NULL,\n" +
-                        "  `email` varchar(45) DEFAULT NULL,\n" +
-                        "  `dateOfBirth` date DEFAULT NULL,\n" +
-                        "  `dateOfJoining` date DEFAULT NULL,\n" +
-                        "  `salary` decimal(10,0) DEFAULT NULL,\n" +
-                        "  PRIMARY KEY (`empID`)\n" +
-                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n"
-        );
+        try
+        {
+            dropTableStatement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            logger.error(() -> e.toString());
+        }
 
-        return  stringBuilder.toString();
-    }
-
-    public static String buildDropStatement()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("DROP TABLE IF EXISTS `employees`;");
-
-        return stringBuilder.toString();
-    }
-
-    public static void logExecutionTime(long startTime)
-    {
-        long endTime = System.nanoTime();
-        long executionNanoTime = endTime - startTime;
-        StringBuilder stringBuilder = new StringBuilder("Execution time: ");
-        stringBuilder.append(executionNanoTime);
-        stringBuilder.append("ns | ");
-        stringBuilder.append(executionNanoTime * 0.000000001);
-        stringBuilder.append("s");
-        logger.info(stringBuilder.toString());
+        ConnectionFactory.returnConnectionToPool(connection);
     }
 }
