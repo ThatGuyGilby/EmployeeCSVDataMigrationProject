@@ -51,10 +51,14 @@ public class EmployeeView
         System.out.println("Please specify a number of Threads that you wish to use..");
         System.out.println("---> ");
 
-        int i = 0;
+        int i = 8;
 
-        if (scanner.hasNext()){
-            i = scanner.nextInt();
+        if (scanner.hasNextInt()){
+            int number = scanner.nextInt();
+            if (number > 0){
+                i = number;
+            }
+
         }
 
         return i;
