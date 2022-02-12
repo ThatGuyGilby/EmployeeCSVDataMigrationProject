@@ -30,4 +30,36 @@ class EmployeeViewTest {
         assertEquals(5, ev.getUserThreadCount());
     }
 
+    @Test
+    @DisplayName("When a number below Zero is passed, return the default 8 threads")
+    public void whenANumberBelowZeroIsPassedReturnTheDefault8Threads(){
+        String input = "-1";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+
+        System.setIn(in);
+
+        assertEquals(8, ev.getUserThreadCount());
+    }
+
+    @Test
+    @DisplayName("When passed a non-Int number, return the value of 8")
+    public void whenPassedANonIntNumberReturnTheValueOf8(){
+        String input = "5.6";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+
+        System.setIn(in);
+
+        assertEquals(8, ev.getUserThreadCount());
+    }
+
+    @Test
+    @DisplayName("If the user passes a String into the method, return the default value of 8")
+    public void ifTheUserPassesAStringIntoTheMethodReturnTheDefaultValueOf8(){
+        String input = "This is a proper String, not like those other String number conflicting types";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+
+        System.setIn(in);
+
+        assertEquals(8, ev.getUserThreadCount());
+    }
 }
