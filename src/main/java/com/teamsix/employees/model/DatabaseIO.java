@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.stream.IntStream;
 
@@ -115,36 +116,15 @@ public class DatabaseIO
         return subSets;
     }
 
-    public static String getEmployee(int empID)
+    public static Employee getEmployee(int empID)
     {
         Connection connection = ConnectionFactory.getConnectionFromPool();
-        ResultSet rs;
 
         if (selectSpecificEmployeeStatement == null)
         {
             try
             {
-                String sql = "SELECT * FROM employees WHERE empID = ?;";
-                selectSpecificEmployeeStatement = connection.prepareStatement(sql);
-                selectSpecificEmployeeStatement.setInt(1, empID);
-                rs = selectSpecificEmployeeStatement.executeQuery();
-
-
-                if (rs.next()) {
-
-                    return rs.getInt("empID")
-                            + " | " + rs.getString("namePrefix")
-                            + " | " + rs.getString("firstName")
-                            + " | " + rs.getString("middleInitial")
-                            + " | " + rs.getString("lastName")
-                            + " | " + rs.getString("gender")
-                            + " | " + rs.getString("email")
-                            + " | " + rs.getDate("dateOfBirth")
-                            + " | " + rs.getDate("dateOfJoining")
-                            + " | $" + rs.getFloat("salary");
-                }
-                else
-                    return "A user was not found with that Employee ID";
+                selectSpecificEmployeeStatement = connection.prepareStatement("SELECT * FROM `employees`\nWHERE empID = ?;");
             }
             catch (SQLException e)
             {
@@ -152,6 +132,14 @@ public class DatabaseIO
             }
         }
 
+        try
+        {
+            return new Employee(selectSpecificEmployeeStatement.executeQuery());
+        }
+        catch (SQLException e)
+        {
+            logger.error(() -> e.toString());
+        }
 
         ConnectionFactory.returnConnectionToPool(connection);
 

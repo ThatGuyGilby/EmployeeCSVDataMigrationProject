@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Scanner;
 
 public class EmployeeManagerMain
 {
@@ -23,15 +22,6 @@ public class EmployeeManagerMain
 
     public static void main(String[] args)
     {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Would you like to just query the database for an Employee?");
-        boolean doFullProgram = true;
-        if (scanner.hasNext() && scanner.next().equalsIgnoreCase("yes")){
-            doFullProgram = false;
-            doSearch(doFullProgram);
-
-        }
-
         String path = EmployeeView.takeFileInput();
         int threadsToRun = EmployeeView.takeThreadInput();
 
@@ -77,26 +67,6 @@ public class EmployeeManagerMain
         {
             e.printStackTrace();
         }
-
-        doSearch(doFullProgram);
-    }
-
-    private static void doSearch(boolean bool) {
-        boolean doSearch = EmployeeView.doYouWishToSearchTheDatabaseForAUser();
-
-        if (doSearch){
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Please enter an employee number");
-            if (scanner.hasNextInt()){
-                int employeeID = scanner.nextInt();
-                if (employeeID > 0){
-                    System.out.println(DatabaseIO.getEmployee(employeeID));
-                }
-            }
-
-        }
-        if (!bool)
-            System.exit(0);
     }
 
     public static void nameLogFile(String name, int threads) throws IOException
