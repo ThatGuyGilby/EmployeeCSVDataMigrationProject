@@ -82,7 +82,9 @@ public class EmployeeManagerMain
     }
 
     private static void doSearch(boolean bool) {
-        boolean doSearch = EmployeeView.doYouWishToSearchTheDatabaseForAUser();
+        boolean doSearch = true;
+        if (bool)
+            doSearch = EmployeeView.doYouWishToSearchTheDatabaseForAUser();
 
         if (doSearch){
             Scanner scanner = new Scanner(System.in);
