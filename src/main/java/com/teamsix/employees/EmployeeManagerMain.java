@@ -1,7 +1,6 @@
 package com.teamsix.employees;
 
 import com.teamsix.employees.model.DatabaseIO;
-import com.teamsix.employees.model.Employee;
 import com.teamsix.employees.model.EmployeeReader;
 import com.teamsix.employees.view.EmployeeView;
 import org.apache.logging.log4j.LogManager;
@@ -11,10 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 public class EmployeeManagerMain
@@ -29,7 +25,6 @@ public class EmployeeManagerMain
         if (scanner.hasNext() && scanner.next().equalsIgnoreCase("yes")){
             doFullProgram = false;
             doSearch(doFullProgram);
-
         }
 
         String path = EmployeeView.takeFileInput();
@@ -39,7 +34,6 @@ public class EmployeeManagerMain
 
         logger.info(() -> "Reading CSV file...\n");
         double startTime = System.nanoTime();
-        ArrayList<Employee> employees = DatabaseIO.readEmployeesFromFile(path);
         double timeTakenToReadCSV = (Math.round(((System.nanoTime() - startTime)/1000000000)*100.0)/100.0);
         logger.info(() -> new StringBuilder().append("Reading took ").append(timeTakenToReadCSV).append(" seconds\n").toString());
 

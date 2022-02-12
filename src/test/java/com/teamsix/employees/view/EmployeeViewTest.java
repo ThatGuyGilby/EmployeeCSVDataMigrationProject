@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +18,26 @@ class EmployeeViewTest {
     @BeforeEach
     public void beforeEach(){
         ev = new EmployeeView();
+    }
+
+    @Test
+    @DisplayName("Given the path to a valid and available csv file, return the pathName")
+    public void givenThePathToAValidAndAvailableCsvFileReturnThePathname(){
+        String input = "src/main/resources/employees.csv";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        assertEquals("src/main/resources/employees.csv", EmployeeView.takeFileInput());
+    }
+
+    @Test
+    @DisplayName("Given the path to an invalid and available csv file, return an alert to the user that states that the file does not pass the checks")
+    public void givenThePathToAnInvalidAndAvailableCsvFileReturnAnAlertToTheUserThatStatesThatTheFileDoesNotPassTheChecks(){
+        String input = "src/main/resources/mysql.properties";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        assertEquals("The submitted file does not pass the checks", EmployeeView.takeFileInput());
     }
 
     @Test
@@ -61,5 +82,27 @@ class EmployeeViewTest {
         System.setIn(in);
 
         assertEquals(8, ev.getUserThreadCount());
+    }
+
+    @Test
+    @DisplayName("When supplied with a Yes, return true")
+    public void whenSuppliedWithAYesReturnTrue(){
+        String input = "Yes";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+
+        System.setIn(in);
+
+        assertTrue(EmployeeView.doYouWishToSearchTheDatabaseForAUser());
+    }
+
+    @Test
+    @DisplayName("When supplied with a No, return false")
+    public void whenSuppliedWithANoReturnFalse(){
+        String input = "No";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+
+        System.setIn(in);
+
+        assertFalse(EmployeeView.doYouWishToSearchTheDatabaseForAUser());
     }
 }
