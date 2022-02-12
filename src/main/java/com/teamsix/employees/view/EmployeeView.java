@@ -30,6 +30,7 @@ public class EmployeeView
             else if (!f.exists() && !f.isDirectory())
             {
                 System.out.println("Sorry that file doesn't exist");
+                System.exit(0);
             }
         }
         catch (IndexOutOfBoundsException e)
@@ -60,13 +61,31 @@ public class EmployeeView
         System.out.println("Please specify a number of Threads that you wish to use..");
         System.out.println("---> ");
 
-        int i = 0;
+        int i = 8;
+
+        if (scanner.hasNextInt()){
+            int number = scanner.nextInt();
+            if (number > 0){
+                i = number;
+            }
 
         if (scanner.hasNext())
         {
             i = scanner.nextInt();
         }
-
+        }
         return i;
+
+    }
+
+    public static boolean doYouWishToSearchTheDatabaseForAUser(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Would you like to search for a user in the database with their Employee ID?");
+        if (scanner.next().equalsIgnoreCase("yes")){
+            return true;
+        }
+        else
+            return false;
+
     }
 }
