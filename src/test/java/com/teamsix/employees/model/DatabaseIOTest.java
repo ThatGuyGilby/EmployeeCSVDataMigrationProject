@@ -32,7 +32,6 @@ public class DatabaseIOTest {
     ResultSet resultSet;
     private static final int EXPECTED_ROW_COUNT = 9943;
     private static final String RESOURCE_LOCK = "src/main/resources/employees.csv";
-    private static final String RESOURCE_LOCK_EXAMPLE_FILE = "unitTestCsv/DatabaseIOTest.csv";
 
     public void closeConnection() throws SQLException {
         resultSet.close();
