@@ -239,25 +239,14 @@ public class DatabaseIOTest {
         closeConnection();
     }
 
-    @DisplayName("Takes correct string if user gets an employee")
+    @DisplayName("Throws null pointer exception if user tries to select the table which is not available")
     @Test
     @ResourceLock(RESOURCE_LOCK)
-    public void takesCorrectStringIfUserGetsAnEmployee(){
+    public void throwsNullPointerExceptionIfUserTriesToSelectTheTableWhichIsNotAvailable() {
         DatabaseIO.readEmployeesFromFile("src/main/resources/employees.csv");
-        DatabaseIO.writeEmployeeEntries(4);
-        String employee = DatabaseIO.getEmployee(647173);
-        Assertions.assertEquals("647173 | Mr. | Milan | F | Krawczyk | M | " +
-                        "milan.krawczyk@hotmail.com | 1980-04-04 | 2012-01-19 | $123681.0"
-        ,employee);
-    }
-
-    @DisplayName("Throws SQLSyntax error exception if user tries to select the table which is not available")
-    @Test
-    @ResourceLock(RESOURCE_LOCK)
-    public void throwsSQLSyntaxErrorExceptionIfUserTriesToSelectTheTableWhichIsNotAvailable() throws SQLException {
+        DatabaseIO.createTable();
         DatabaseIO.dropTable();
-        statement = connection.createStatement();
-        Assertions.assertThrows(SQLSyntaxErrorException.class, () ->
+        Assertions.assertThrows(NullPointerException.class, () ->
         {
             resultSet = statement.executeQuery("SELECT * FROM employees");
         });
@@ -268,7 +257,7 @@ public class DatabaseIOTest {
     @ResourceLock(RESOURCE_LOCK)
     public void throwsSQLSyntaxErrorExceptionIfUserTriesToCreateSameTableAgain(){
         DatabaseIO.readEmployeesFromFile("src/main/resources/employees.csv");
-        DatabaseIO.createTable();
+        DatabaseIO.writeEmployeeEntries(4);
         Assertions.assertThrows(SQLSyntaxErrorException.class, () ->
         {
             connection.prepareStatement("CREATE TABLE `employees` (`ID` VARCHAR (5) NOT NULL);").executeUpdate();
