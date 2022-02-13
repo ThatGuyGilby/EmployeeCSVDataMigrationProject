@@ -57,6 +57,16 @@ Relevant Classes
 [⮬ Table of Contents](#table-of-contents)
 
 # JUnit Testing
+Most of the testing in this project followed the Test Driven Development (TDD) framework of software development and testing.
+
+### **The testing of EmployeeView**
+
+In the vein of TDD, EmployeeView was tested and then developed to fit with the tests in order for them to pass. From testing the return of the filePath String to the return of the Thread count. Some exit points were included and testing was tricky on detecting them. It was therefore decided that they would stay and manual testing would be performed on them. Wherever they existed, testing of the exit conditions was performed. Passing in files that didn't match the specified file type, if it didn't contain "csv" following a full stop. 
+
+As well as this, the user is also given the choice of searching the database for a single user, testing was performed to ensure that only a "yes" would trigger the search. Using a "Yes" and a "yes" followed by a "No", "no" and an Integer. Each failed initially and was subsequently made to pass, besides the Integer test case that passed with no change needed upon the passing of the "No" and "no" test cases.
+
+![image-20220213134034698](https://i.imgur.com/pQcPh4F.png)
+
 
 Relevant Classes
 - [EmployeeViewTest.java](../dev/src/test/java/com/teamsix/employees/view/EmployeeViewTest.java)
