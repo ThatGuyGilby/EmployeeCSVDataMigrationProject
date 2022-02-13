@@ -5,8 +5,29 @@
 - [Phase 3](#phase-3)
 - [Phase 4](#phase-4)
 - [JUnit Testing](#junit-testing)
+- [Parallel Junit Testing](#parallel-junit-testing)
 
 ## How to Use the Project
+This project uses a variety of different externally obtained packages, listed below:
+* JUnit
+* Cucumber
+* Cucumber for Java
+* MySQL Connector for Java
+* Log4J
+
+While they're not all required, it is recommended to have these installed. As well as this, MySQL requires a properties file. A basic formulated file is included with the project. Change the dbPassword field to match your installed setup. dbURL and dbUser may also require changing based on install.
+
+Once installed, the user can run the application. On first run it is recommended to run through the file the user can specify as searching the database will be useless and will return an error.
+
+### First runthrough
+On run the first input the user is shown is for the user to decide whether to run the full program or not. The option "Yes" will search the database and quit after returning the specified user with the UserID. Errors as per above if no database exists. Inputting "No" will run the full program.
+
+First up in the full program runthrough is the user being asked for a file to pull data from. If the file doesn't fit the specific file type, it will alert the user. Same for a file that does not exist and a malformed filepath.
+
+Following this the user is asked which amount of threads to use. Anything in the range of 1-144 is acceptable. Below 1 is caught. 145 and above is out of the range that MySQL will accept for connections.
+
+The program will scan the file and input the data into the database. Following this the user will be asked if they wish to search the database for a user based on a UserID. Now that the database is filled, this will work. Provide a valid UserID and the program will query the database and return the full entry based on the ID.
+
 
 [⮬ Table of Contents](#table-of-contents)
 
