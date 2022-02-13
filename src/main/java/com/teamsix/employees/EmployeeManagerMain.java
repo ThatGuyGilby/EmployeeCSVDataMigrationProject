@@ -29,7 +29,6 @@ public class EmployeeManagerMain
         if (scanner.hasNext() && scanner.next().equalsIgnoreCase("yes")){
             doFullProgram = false;
             doSearch(doFullProgram);
-
         }
 
         String path = EmployeeView.takeFileInput();
