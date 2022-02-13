@@ -72,3 +72,47 @@ Relevant Classes
 - [EmployeeViewTest.java](../dev/src/test/java/com/teamsix/employees/view/EmployeeViewTest.java)
 
 [⮬ Table of Contents](#table-of-contents)
+
+### **The testing of DatabaseIOTest**
+
+DatabaseIO class was tested to see whether the class is reading the file and writing SQL queries in correct way. The class was tested to make sure that every employee was added to database and no value was missing in these queries.
+
+It was tested again in some exceptions to ensure that it is working in right way. For example, scenario of no thread to use and trying to insert the table whose name is the same as the one inserted before. 
+
+ResourceLock annotations were used to be able to make synchronized tests in parallel testing.
+
+![image-DatabaseIOTestResults](https://i.imgur.com/NFOUMyL.jpg)
+
+
+Relevant Class
+- [DatabaseIOTest.java](../dev/src/test/java/com/teamsix/employees/model/DatabaseIOTest.java)
+
+[⮬ Table of Contents](#table-of-contents)
+
+### **The testing of EmployeeTest**
+
+Employee class was tested to see that each employee's value is formatted in correct way and no missing value as well. Mostly lambda expressions were used to be able to implement one line code testing. Also, regex was used to check some values of class like email, address etc. 
+
+![image-EmployeeTest](https://i.imgur.com/8opTEvV.png)
+
+
+Relevant Class
+- [EmployeeTest.java](../dev/src/test/java/com/teamsix/employees/model/EmployeeTest.java)
+
+[⮬ Table of Contents](#table-of-contents)
+
+## Parallel Junit Testing
+
+Parallel testing was implemented using configuration file named junit-platform.properties. It was done not only across the classes also in the test methods in same class.
+
+![image-ParallelTesting](https://i.imgur.com/mAcIGf4.png)
+
+It can easily be run if you click on package or any class. It runs as below
+
+![image-ParallelTestingExample](https://i.imgur.com/YzeWTqR.png)
+
+
+Relevant File
+- [junit-platform.properties](../dev/src/test/resources/junit-platform.properties)
+
+[⮬ Table of Contents](#table-of-contents)
