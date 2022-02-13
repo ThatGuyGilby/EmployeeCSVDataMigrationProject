@@ -18,10 +18,10 @@ public class EmployeeView
         Scanner scanner = new Scanner(System.in);
         String fileName = scanner.next();
         File f = new File(fileName);
-        try
-        {
+        boolean doContinue;
+        if (fileName.contains(".")){
+            doContinue = true;
             String[] fileCheck = fileName.split("\\.");
-
             if (!Objects.equals(fileCheck[1], "csv"))
             {
                 System.out.println("The submitted file does not pass the checks");
@@ -33,12 +33,19 @@ public class EmployeeView
                 System.exit(0);
             }
         }
-        catch (IndexOutOfBoundsException e)
-        {
-            logger.error(() -> e.toString());
+        else{
+            logger.error(() -> "That is a file that contains no file extension, and is therefore incompatible with this program");
+            doContinue = false;
         }
 
-        return fileName;
+
+        if (doContinue){
+            return fileName;
+        }
+        else{
+            System.exit(0);
+        }
+        return null;
     }
 
     public static int takeThreadInput()
