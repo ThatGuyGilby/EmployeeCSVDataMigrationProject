@@ -73,7 +73,7 @@ public class EmployeeTest
     @Test
     @DisplayName("Missing values of salary")
     public void missingValuesOfSalary(){
-        Assertions.assertTrue(employees.stream().allMatch(employee -> employee.getSalary() != 0));
+        Assertions.assertTrue(employees.stream().allMatch(employee -> employee.getSalary() > 0));
     }
 
     @Test
